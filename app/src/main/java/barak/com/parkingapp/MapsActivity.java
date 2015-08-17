@@ -58,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
 
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(19).build();
+        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(18).build();
         //        .target(MOUNTAIN_VIEW)      // Sets the center of the map to Mountain View
         //        .zoom(17)                   // Sets the zoom
         //        .bearing(90)                // Sets the orientation of the camera to east
