@@ -1,0 +1,92 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="barak.com.parkingapp.ActivityAbout"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="126dp"
+        android:id="@+id/scrollView"
+        android:layout_gravity="center_horizontal"
+        android:fadeScrollbars="false"
+        android:layout_marginTop="15dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/cv_file"
+                android:id="@+id/textView11" />
+        </LinearLayout>
+    </ScrollView>
+
+    <VideoView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:id="@+id/videoViewAbout"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+    <Button
+        android:layout_width="179dp"
+        android:layout_height="166dp"
+        android:background="@drawable/videoicon"
+        android:id="@+id/buttonWatchMyVideo"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:onClick="openVideo" />
+
+    <Button
+        android:layout_width="67dp"
+        android:layout_height="40dp"
+        android:id="@+id/buttonReturn"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"
+        android:background="@drawable/collapse"
+        android:onClick="oshowCintactMe"
+        android:layout_marginTop="25dp" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/linear">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:weightSum="1">
+
+            <ImageView
+                android:layout_width="172dp"
+                android:layout_height="70dp"
+                android:id="@+id/imageView"
+                android:src="@drawable/email"
+                android:onClick="openEmail" />
+
+            <ImageView
+                android:layout_width="82dp"
+                android:layout_height="70dp"
+                android:id="@+id/imageView2"
+                android:src="@drawable/link"
+                android:onClick="openLinkedin"
+                android:layout_weight="0.57" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

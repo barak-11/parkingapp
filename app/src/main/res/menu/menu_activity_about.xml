@@ -1,0 +1,29 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="barak.com.parkingapp.ActivityAbout">
+
+    <item android:id="@+id/homeActivity"
+        android:title="homeactivity"
+        android:icon="@drawable/homeicon"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/lastparkingplace"
+        android:title="action_search"
+        android:icon="@drawable/iconparkingnew"
+        app:showAsAction="always"/>
+
+    <item android:id="@+id/mylinkdinpage"
+        android:title="linkdinpage"
+        android:icon="@drawable/linkdin"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/showParkingLots"
+        android:title="showParkingLots"
+        android:icon="@drawable/parkinglots"
+        app:showAsAction="ifRoom"
+        />
+
+    <!-- Settings, should always be in the overflow -->
+
+</menu>

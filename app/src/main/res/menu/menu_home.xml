@@ -1,0 +1,38 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".HomeActivity">
+
+    <!-- Search, should appear as action button -->
+    <item android:id="@+id/lastparkingplace"
+        android:title="Last Parking Space"
+        android:icon="@drawable/iconparkingnew"
+        app:showAsAction="ifRoom"/>
+
+    <item android:id="@+id/mylinkdinpage"
+        android:title="Linkedin"
+        android:icon="@drawable/linkdin"
+        app:showAsAction="never"
+        />
+    <item android:id="@+id/showParkingLots"
+        android:title="Nearest Parking Lots"
+        android:icon="@drawable/parkinglots"
+        app:showAsAction="ifRoom"
+        />
+    <item android:id="@+id/streetv"
+        android:title="Street View"
+        android:icon="@drawable/streetview"
+        app:showAsAction="always"
+        />
+    <item android:id="@+id/demoMap"
+        android:title="Demo Map View"
+        app:showAsAction="never"
+        />
+
+    <!-- Settings, should always be in the overflow -->
+
+    <item android:id="@+id/action_settings" android:title="@string/action_settings"
+        android:orderInCategory="100" app:showAsAction="never" />
+    <item android:id="@+id/about_the_developer" android:title="About"
+        android:orderInCategory="1" app:showAsAction="never" />
+
+</menu>
