@@ -1,38 +1,30 @@
 package barak.com.parkingapp;
 
-import android.app.ActionBar;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.location.Location;
-import android.location.LocationManager;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.widget.EditText;
 import android.widget.TextView;
 
 import com.vstechlab.easyfonts.EasyFonts;
 
 
-public class HomeActivity extends ActionBarActivity{
+public class HomeActivity extends AppCompatActivity {
 
-    SharedPreferences myDBfile; // create a file or return a reference to an exist file
+
+    SharedPreferences myDBfile;
     SharedPreferences.Editor myEditor;
 
-    public  Location myCurrentLocation = new Location(LocationManager.GPS_PROVIDER);
-    LocationManager _manager;
-
     WebView myWebViewHomeAct;
-    public static String keyMessage = "messageFromFirstActivity";
-    public static String keyMessage2 = "messageFromSecondActivity";
-
     String longtitude;
     String altitude;
 
@@ -49,6 +41,8 @@ public class HomeActivity extends ActionBarActivity{
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_home);
+
+        myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
 
 
         tvWelcomeBack=(TextView)findViewById(R.id.welcomeBackID);
@@ -67,31 +61,28 @@ public class HomeActivity extends ActionBarActivity{
         tvDriverCarType.setTypeface(EasyFonts.robotoThin(this));
         tvCarLocation.setTypeface(EasyFonts.robotoThin(this));
 
-
-        myDBfile=getSharedPreferences("file1",MODE_PRIVATE);
         String x=myDBfile.getString("Name","Yossi Cohen"); // asking for KEY names x (was created in save method) or a default file (in case x doesn't exist) named "haha"
         String y=myDBfile.getString("CarType","Honda");
         String z=myDBfile.getString("CarNumber","11-222-33");
+
+        longtitude = myDBfile.getString("longitude", "34.77539057");
+        altitude = myDBfile.getString("latitude", "32.07481721");
+
         ((TextView)findViewById(R.id.driverNameID)).setText(x);
         ((TextView)findViewById(R.id.CarNumberID)).setText(z);
         ((TextView)findViewById(R.id.CarTypeID)).setText(y);
 
 
-
         myWebViewHomeAct=(WebView)findViewById(R.id.webViewCurrentCarLocation);
         WebViewClient myClient= new WebViewClient();
         myWebViewHomeAct.setWebViewClient(myClient);
-        //myWebViewHomeAct.setWebViewClient(new WebViewClient());
         WebSettings webSettings = myWebViewHomeAct.getSettings();
+
         webSettings.setJavaScriptEnabled(true);
         webSettings.setDatabaseEnabled(true);
         webSettings.setDomStorageEnabled(true);
         webSettings.setGeolocationDatabasePath(getFilesDir().getPath());
         webSettings.setGeolocationEnabled(true);
-
-
-        longtitude=myDBfile.getString("longitude","34.77539057" );
-        altitude=myDBfile.getString("latitude","32.07481721" );
 
 
         String strUri="https://www.google.co.il/maps/@"+Double.parseDouble(altitude)+","+Double.parseDouble(longtitude)+",16z";
@@ -119,7 +110,9 @@ public class HomeActivity extends ActionBarActivity{
             case R.id.lastparkingplace:
                 Intent myIntent;
                 myIntent= new Intent(this,SaveLocationActivity.class);
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(myIntent);
+                finish();
                 return true;
 
             case R.id.showParkingLots:
@@ -167,8 +160,9 @@ public class HomeActivity extends ActionBarActivity{
             case R.id.action_settings:
                 Intent myIntentSettings;
                 myIntentSettings= new Intent(this,SettingsActivity.class);
+                myIntentSettings.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(myIntentSettings);
-                //here is changing in the float icon aka settings
+
                 return true;
             case R.id.about_the_developer:
                 Intent myIntentAbout;
@@ -189,7 +183,7 @@ public class HomeActivity extends ActionBarActivity{
 
         Intent myIntent;
         myIntent= new Intent(this,SaveLocationActivity.class);
-
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
     }
 
@@ -197,15 +191,14 @@ public class HomeActivity extends ActionBarActivity{
 
         Uri gmmIntentUri;
         Intent mapIntent;
-        String alt,lon;
-        lon=myDBfile.getString("longitude","34.77539057" );
-        alt=myDBfile.getString("latitude","32.07481721" );
-        gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(alt) + "," + Double.parseDouble(lon) + "&mode=w");
+
+        gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(altitude) + "," + Double.parseDouble(longtitude) + "&mode=w");
         mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
+        mapIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
             startActivity(mapIntent);
-
+            finish();
         }
 
 

@@ -108,7 +108,7 @@
             android:background="@drawable/delete856"
             android:id="@+id/ReturnButton"
             android:onClick="returnToMainActivity"
-            android:layout_marginLeft="40dp" />
+            android:layout_marginLeft="60dp" />
     </LinearLayout>
 
 </LinearLayout>

@@ -23,6 +23,8 @@ import android.widget.TextView;
 
 public class SaveLocationActivity extends ActionBarActivity implements LocationListener {
 
+    public static boolean saved = false;
+
     SharedPreferences myDBfile; // create a file or return a reference to an exist file
     SharedPreferences.Editor myEditor;
 
@@ -69,7 +71,7 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
 
         _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
-        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
+        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 2, this);
 
 
         Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
@@ -125,8 +127,8 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
             case R.id.navigate:
                 String alt,lon;
-                lon=myDBfile.getString("longitude","100" );
-                alt=myDBfile.getString("latitude","100" );
+                lon=myDBfile.getString("longitude","34.77539057" );
+                alt=myDBfile.getString("latitude","32.07481721" );
                 gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(alt) + "," + Double.parseDouble(lon) + "&mode=w");
                 mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
@@ -184,34 +186,37 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     public void save(View view) {
 
 
+        saved = true;
         myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
         myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
+        myEditor.putString("saved", Boolean.toString(saved));
         myEditor.commit(); //"commit" saves the file
+
         Intent myIntent;
         myIntent= new Intent(this,HomeActivity.class);
+        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
+        finish();
     }
 
 
     @Override
     public void onLocationChanged(Location location) {
 
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
+        double lo = location.getLongitude();
+        double la = location.getLatitude();
 
         //myWebViewSaveLocationAct=(WebView)findViewById(R.id.webViewSaveLocation);
 
-        a=String.valueOf(longitude);
-        b=String.valueOf(latitude);
-
+        /*
         myTextViewLati=(TextView)findViewById(R.id.latitude);
         myTextViewLati.setText(Double.toString(latitude));
 
         myTextViewLong=(TextView)findViewById(R.id.longtitude);
         myTextViewLong.setText(Double.toString(longitude));
 
-        String strUri="https://www.google.co.il/maps/@"+latitude+","+longitude+",13z";
-       // String strUri="www.ynet.co.il";
+*/
+        String strUri="https://www.google.co.il/maps/@"+la+","+lo+",13z";
 
         myWebViewSaveLocationAct.loadUrl(strUri);
     }
@@ -234,10 +239,14 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
     public void returnToMainActivity(View view) {
 
-        Intent myIntent;
-        myIntent= new Intent(this,HomeActivity.class);
-        startActivity(myIntent);
-}
+        Intent myIntentNew;
+        myIntentNew= new Intent(this,HomeActivity.class);
+        myIntentNew.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(myIntentNew);
+
+
+    }
+
 
     public void updateCurrentLocation(View view) {
 
@@ -257,7 +266,7 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         myTextViewLong.setText(Double.toString(longitude));
 
     }
-
+/*
     @Override
     protected void onStop() {
         super.onStop(); // in case the app crashes - onStop will save the data
@@ -267,6 +276,6 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         myEditor.commit();
 
     }
-
+*/
 }
 

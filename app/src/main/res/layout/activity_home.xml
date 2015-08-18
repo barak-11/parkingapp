@@ -32,7 +32,7 @@ android:background="#7B68EE"
             android:text="Large Text"
             android:id="@+id/driverNameID"
             android:textColor="#B0C4DE"
-            android:layout_marginLeft="5dp" />
+            android:layout_marginLeft="60dp" />
 
     </LinearLayout>
 
