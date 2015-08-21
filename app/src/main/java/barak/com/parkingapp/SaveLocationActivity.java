@@ -1,27 +1,32 @@
 package barak.com.parkingapp;
 
-import android.content.Context;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.webkit.WebSettings;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-import android.widget.EditText;
+import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class SaveLocationActivity extends ActionBarActivity implements LocationListener {
+
+public class SaveLocationActivity extends ActionBarActivity implements LocationListener, OnMapReadyCallback {
 
     public static boolean saved = false;
 
@@ -29,9 +34,6 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     SharedPreferences.Editor myEditor;
 
     LocationManager _manager;
-
-   // WebView myWebViewHomeAct;
-    WebView myWebViewSaveLocationAct;
 
     double longitude;
     double latitude;
@@ -53,26 +55,13 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
         myEditor=myDBfile.edit();
-
-        //// the code above is for the Database, the one beneath is for the GPS
-
-
-        myWebViewSaveLocationAct=(WebView)findViewById(R.id.webViewSaveLocation);
-        myWebViewSaveLocationAct.setWebViewClient(new WebViewClient());
-
-        WebSettings webSettings = myWebViewSaveLocationAct.getSettings();
-        webSettings.setJavaScriptEnabled(true);
-        webSettings.setDatabaseEnabled(true);
-        webSettings.setDomStorageEnabled(true);
-        webSettings.setGeolocationDatabasePath(getFilesDir().getPath());
-        webSettings.setGeolocationEnabled(true);
-
-
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
 
         _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
-        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 2, this);
-
+        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
         Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         longitude=l.getLongitude();
@@ -89,15 +78,12 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
         ///----
         myTextViewLatiNotationN=(TextView)findViewById(R.id.textViewNotationAltitude);
-        myTextViewLatiNotationN.setText("°N");
+        myTextViewLatiNotationN.setTextSize(20);
+        myTextViewLatiNotationN.setText(" °N");
 
         myTextViewAltiNotationE=(TextView)findViewById(R.id.textViewNotationLongtitude);
-        myTextViewAltiNotationE.setText("°E");
-
-        String strUri="https://www.google.co.il/maps/@"+latitude+","+longitude+",16z";
-
-        myWebViewSaveLocationAct.loadUrl(strUri);
-
+        myTextViewAltiNotationE.setTextSize(20);
+        myTextViewAltiNotationE.setText(" °E");
 
 
     }
@@ -186,11 +172,11 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     public void save(View view) {
 
 
-        saved = true;
+        saved=true;
         myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
         myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
         myEditor.putString("saved", Boolean.toString(saved));
-        myEditor.commit(); //"commit" saves the file
+                myEditor.commit(); //"commit" saves the file
 
         Intent myIntent;
         myIntent= new Intent(this,HomeActivity.class);
@@ -203,22 +189,21 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     @Override
     public void onLocationChanged(Location location) {
 
-        double lo = location.getLongitude();
-        double la = location.getLatitude();
+        _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
+        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
-        //myWebViewSaveLocationAct=(WebView)findViewById(R.id.webViewSaveLocation);
 
-        /*
+        Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        longitude=l.getLongitude();
+        latitude=l.getLatitude();
+
+
         myTextViewLati=(TextView)findViewById(R.id.latitude);
         myTextViewLati.setText(Double.toString(latitude));
 
         myTextViewLong=(TextView)findViewById(R.id.longtitude);
         myTextViewLong.setText(Double.toString(longitude));
 
-*/
-        String strUri="https://www.google.co.il/maps/@"+la+","+lo+",13z";
-
-        myWebViewSaveLocationAct.loadUrl(strUri);
     }
 
     @Override
@@ -277,5 +262,57 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
     }
 */
+@Override
+public void onMapReady(GoogleMap map) {
+
+
+    LatLng myLocation = new LatLng(latitude,longitude);
+
+    map.setMyLocationEnabled(true);
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+    Marker marker=null;
+
+        marker=map.addMarker(new MarkerOptions()
+                .title("This is your Car")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+                .snippet("Know where your car is located at anytime")
+                .position(myLocation));
+
+    dropPinEffect(marker);
+
+}
+    private void dropPinEffect(final Marker marker) {
+        // Handler allows us to repeat a code block after a specified delay
+        final android.os.Handler handler = new android.os.Handler();
+        final long start = SystemClock.uptimeMillis();
+        final long duration = 1500;
+
+        // Use the bounce interpolator
+        final android.view.animation.Interpolator interpolator =
+                new BounceInterpolator();
+
+        // Animate marker with a bounce updating its position every 15ms
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                // Calculate t for bounce based on elapsed time
+                float t = Math.max(
+                        1 - interpolator.getInterpolation((float) elapsed
+                                / duration), 0);
+                // Set the anchor
+                marker.setAnchor(0.5f, 1.0f + 14 * t);
+
+                if (t > 0.0) {
+                    // Post this event again 15ms from now.
+                    handler.postDelayed(this, 15);
+                } else { // done elapsing, show window
+                    marker.showInfoWindow();
+                }
+            }
+        });
+    }
+
+
 }
 

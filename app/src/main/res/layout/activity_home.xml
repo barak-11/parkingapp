@@ -18,7 +18,7 @@ android:background="#7B68EE"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Welcome"
+            android:text="@string/welcome"
             android:textColor="#B0C4DE"
             android:id="@+id/welcomeBackID"
             android:layout_alignParentTop="true"
@@ -47,7 +47,7 @@ android:background="#7B68EE"
             android:layout_height="wrap_content"
             android:textColor="#B0C4DE"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Car Number:"
+            android:text="@string/car_number"
             android:id="@+id/textView2" />
 
         <TextView
@@ -70,7 +70,7 @@ android:background="#7B68EE"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Car Type:"
+            android:text="@string/car_type"
             android:textColor="#B0C4DE"
             android:id="@+id/textView"
             android:layout_gravity="bottom" />
@@ -108,9 +108,9 @@ android:background="#7B68EE"
             android:layout_height="52dp"
             android:background="@drawable/savebig"
             android:id="@+id/MoveActivitybutton"
-            android:layout_gravity="center"
             android:onClick="nextActivity"
-            android:layout_marginLeft="90dp" />
+            android:layout_marginLeft="90dp"
+            android:layout_gravity="center" />
 
         <Button
             android:layout_width="52dp"
@@ -122,11 +122,10 @@ android:background="#7B68EE"
             android:layout_marginLeft="40dp" />
     </LinearLayout>
 
-    <WebView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/webViewCurrentCarLocation"
-        android:layout_gravity="center_horizontal"
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+        android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_marginTop="10dp" />
 
 </LinearLayout>

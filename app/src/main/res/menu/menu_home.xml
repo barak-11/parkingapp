@@ -27,6 +27,10 @@
         android:title="Demo Map View"
         app:showAsAction="never"
         />
+    <item android:id="@+id/clearCache"
+        android:title="Clear Cache"
+        app:showAsAction="never"
+        />
 
     <!-- Settings, should always be in the overflow -->
 

@@ -13,25 +13,19 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
-
-
-
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/mapconappicon"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme"
-
-        >
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".HomeActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".SaveLocationActivity"
@@ -56,18 +50,23 @@
 
         <activity
             android:name=".MapsActivity"
-            android:label="@string/title_activity_maps">
-
-        </activity>
-        <activity
-            android:name=".NavigateActivity"
-            android:label="@string/title_activity_navigate" >
-
+            android:label="@string/title_activity_maps" >
         </activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyCmobSna1Qui0mAX_dSTLxlD4gL_Kj11fk"/>
+            android:value="AIzaSyCmobSna1Qui0mAX_dSTLxlD4gL_Kj11fk" />
+
+
+        <receiver android:name=".NewAppWidget" >
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/new_app_widget_info" />
+        </receiver>
     </application>
 
 </manifest>
