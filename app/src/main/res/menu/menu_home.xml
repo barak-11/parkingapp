@@ -8,10 +8,6 @@
         android:icon="@drawable/iconparkingnew"
         app:showAsAction="ifRoom"/>
 
-    <item android:id="@+id/mylinkdinpage"
-        android:title="Linkedin"
-        android:icon="@drawable/linkdin"
-        app:showAsAction="never"
         />
     <item android:id="@+id/showParkingLots"
         android:title="Nearest Parking Lots"
@@ -23,10 +19,7 @@
         android:icon="@drawable/streetview"
         app:showAsAction="always"
         />
-    <item android:id="@+id/demoMap"
-        android:title="Demo Map View"
-        app:showAsAction="never"
-        />
+
     <item android:id="@+id/clearCache"
         android:title="Clear Cache"
         app:showAsAction="never"

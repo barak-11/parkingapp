@@ -1,35 +1,92 @@
 package barak.com.parkingapp;
-import android.content.Context;
+
 import android.content.Intent;
-import android.location.Criteria;
-import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.view.View;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.UiSettings;
-import com.google.android.gms.maps.model.CameraPosition;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+
+public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
+
+    GoogleApiClient mGoogleApiClient;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+
+        mGoogleApiClient = new GoogleApiClient
+                .Builder(this)
+                .enableAutoManage( this, 0, this)
+                .addApi( Places.GEO_DATA_API )
+                .addApi( Places.PLACE_DETECTION_API )
+                .addConnectionCallbacks( this)
+                .addOnConnectionFailedListener( this )
+                .build();
+        displayPlacePicker();
     }
 
     @Override
-    public void onMapReady(GoogleMap mMap) {
+    protected void onStart() {
+        super.onStart();
+        if( mGoogleApiClient != null )
+            mGoogleApiClient.connect();
+    }
 
+    @Override
+    protected void onStop() {
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
+    }
+    private void displayPlacePicker() {
+        int PLACE_PICKER_REQUEST = 1;
+        if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
+            return;
+
+        PlacePicker.IntentBuilder builder = new PlacePicker.IntentBuilder();
+
+        try {
+            startActivityForResult( builder.build( getApplicationContext() ),PLACE_PICKER_REQUEST );
+            Log.d("try","tried");
+        } catch ( GooglePlayServicesRepairableException e ) {
+            Log.d("PlacesAPI Demo", "GooglePlayServicesRepairableException thrown");
+        } catch ( GooglePlayServicesNotAvailableException e ) {
+            Log.d( "PlacesAPI Demo", "GooglePlayServicesNotAvailableException thrown" );
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        //if (requestCode == REQUEST_RESOLVE_ERROR) {
+          //  mResolvingError = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleApiClient.isConnecting() &&
+                        !mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
+
+
+    @Override
+    public void onMapReady(GoogleMap mMap) {
+/*
 
         // Enable MyLocation Layer of Google Map
         mMap.setMyLocationEnabled(true);
@@ -58,21 +115,31 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         // Create a LatLng object for the current location
         LatLng latLng = new LatLng(latitude, longitude);
 
+        LatLng mapCenter = new LatLng(41.889, -87.622);
 
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mapCenter, 13));
 
+        // Flat markers will rotate when the map is rotated,
+        // and change perspective when the map is tilted.
+        mMap.addMarker(new MarkerOptions()
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.arrow1))
+                .position(mapCenter)
+                .flat(true)
+                .rotation(245));
 
-        CameraPosition cameraPosition = new CameraPosition.Builder().target(latLng).zoom(17).build();
-        //        .target(MOUNTAIN_VIEW)      // Sets the center of the map to Mountain View
-        //        .zoom(17)                   // Sets the zoom
-        //        .bearing(90)                // Sets the orientation of the camera to east
-        //        .tilt(30)                   // Sets the tilt of the camera to 30 degrees
-        //        .build();                   // Creates a CameraPosition from the builder
-        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        CameraPosition cameraPosition = CameraPosition.builder()
+                .target(mapCenter)
+                .zoom(13)
+                .bearing(90)
+                .build();
 
-
-        mMap.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude)).title("You are here!").snippet("Consider yourself located"));
-
+        // Animate the change in camera view over 2 seconds
+        mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition),
+                2000, null);
+                */
     }
+
+
 
     public void returntoo(View view) {
 
@@ -80,5 +147,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         myIntent= new Intent(this,HomeActivity.class);
         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }

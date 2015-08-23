@@ -1,16 +1,22 @@
 package barak.com.parkingapp;
 
+import android.annotation.TargetApi;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -23,7 +29,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.vstechlab.easyfonts.EasyFonts;
 
 
-public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class HomeActivity extends AppCompatActivity implements OnMapReadyCallback, SwipeRefreshLayout.OnRefreshListener {
 
 
     SharedPreferences myDBfile;
@@ -40,18 +46,34 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView tvDriverCarType;
     TextView tvCarLocation;
 
+    SwipeRefreshLayout mSwipeRefreshLayout;
+    private Toolbar toolbar;
+
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
 
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_green_light,
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
-        myEditor=myDBfile.edit();
+        myEditor = myDBfile.edit();
 
 
         tvWelcomeBack = (TextView) findViewById(R.id.welcomeBackID);
@@ -128,18 +150,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
 
                 return true;
-            case R.id.mylinkdinpage:
-                Intent myIntentLinkedin;
-                myIntentLinkedin = new Intent(this, LinkedinActivity.class);
-                startActivity(myIntentLinkedin);
-                return true;
-            case R.id.demoMap:
-                Intent myMapIntent;
-                myMapIntent = new Intent(this, MapsActivity.class);
-                startActivity(myMapIntent);
-                return true;
+
             case R.id.clearCache:
 
+                Toast.makeText(this, "Tip - Next Time Swipe Down the Map to Refresh", Toast.LENGTH_LONG).show();
                 myEditor.putString("longitude", "34.77539057");
                 myEditor.putString("latitude", "32.07481721");
                 myEditor.putString("saved", "false");
@@ -212,11 +226,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
         Marker marker = null;
         String temp = myDBfile.getString("saved", "false");
-/*
-Marker marker = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN))
-                .anchor(0.0f, 1.0f) // Anchors the marker on the bottom left
-                .position(new LatLng(latitude, longitude)));
-*/
+
 
         if (temp.equals("false")) {
             marker = map.addMarker(new MarkerOptions()
@@ -228,7 +238,7 @@ Marker marker = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.
         } else if (temp.equals("true")) {
             marker = map.addMarker(new MarkerOptions()
                     .title("Your Car")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_VIOLET))
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                     .snippet("This is Where You've Parked Your Car")
                     .position(sydney));
         }
@@ -267,4 +277,24 @@ Marker marker = mMap.addMarker(new MarkerOptions().icon(BitmapDescriptorFactory.
             }
         });
     }
+
+    @Override
+    public void onRefresh() {
+        Toast.makeText(this, "Clear Cache", Toast.LENGTH_SHORT).show();
+
+        mSwipeRefreshLayout.setRefreshing(true);
+        myEditor.putString("longitude", "34.77539057");
+        myEditor.putString("latitude", "32.07481721");
+        myEditor.putString("saved", "false");
+        myEditor.commit(); //"commit" saves the file
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+                recreate();
+            }
+        }, 3000);
+    }
 }
+
+

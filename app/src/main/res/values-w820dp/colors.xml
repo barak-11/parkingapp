@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="myRed">#ffff0000</color>
-    <color name="myBlue">#FF1C1EFF</color>
-    <color name="myYellow">#FFFFF400</color>
-    <color name="LightGray">#D3D3D3</color>
+    <color name="red">#ffff0000</color>
+    <color name="yellow">#FFFFF400</color>
+    <color name="grey">#D3D3D3</color>
     <color name="LightSeaGreen">#20B2AA</color>
     <color name="SkyBlue">#87CEEB</color>
+    <color name="orange">#FF9900</color>
+    <color name="green">#009900</color>
+    <color name="blue">#000099</color>
+    <color name="ColorPrimary">#FF5722</color>
+    <color name="ColorPrimaryDark">#E64A19</color>
+    <color name="primaryDark">#800000</color>
+    <color name="light">#800080</color>
+    <color name="accent">#FF0000</color>
 </resources>

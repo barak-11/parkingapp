@@ -2,30 +2,32 @@ package barak.com.parkingapp;
 
 import android.content.Intent;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.MediaController;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-import java.net.URI;
+import com.vstechlab.easyfonts.EasyFonts;
 
 
-public class ActivityAbout extends ActionBarActivity {
+public class ActivityAbout extends AppCompatActivity {
 
-
-
+    TextView t;
     VideoView v;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_about);
+
+        t=(TextView) findViewById(R.id.myCV);
+        t.setTypeface(EasyFonts.robotoThin(this));
 
         v =(VideoView) findViewById(R.id.videoViewAbout);
         Uri myUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.awesome);
@@ -33,8 +35,6 @@ public class ActivityAbout extends ActionBarActivity {
         v.setMediaController(new MediaController(this));
         v.requestFocus();
         v.start();
-        // v.setVideoPath("https://www.youtube.com/watch?v=9YLMrbmkUOs");
-       // v.start();
     }
 
     @Override
@@ -147,7 +147,7 @@ public class ActivityAbout extends ActionBarActivity {
     public void openEmail(View view) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL,new String("barakse11@gmail.com"));
+        emailIntent.putExtra(Intent.EXTRA_EMAIL,"barakse11@gmail.com");
         emailIntent.setType("text/plain");
         startActivity(emailIntent);
     }

@@ -3,15 +3,15 @@ package barak.com.parkingapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -19,7 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-public class SettingsActivity extends ActionBarActivity {
+public class SettingsActivity extends AppCompatActivity implements SwipeRefreshLayout.OnRefreshListener  {
 
 
     SharedPreferences myDBfile; // create a file or return a reference to an exist file
@@ -29,10 +29,20 @@ public class SettingsActivity extends ActionBarActivity {
     RadioGroup rg;
     RadioButton rbAutomatic;
     RadioButton rbManual;
+
+    SwipeRefreshLayout mSwipeRefreshLayout;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_green_light,
+                android.R.color.holo_blue_bright,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        mSwipeRefreshLayout.setOnRefreshListener(this);
 
 
         t=(TextView)findViewById(R.id.AutomatedManuelTextView);
@@ -178,4 +188,20 @@ public class SettingsActivity extends ActionBarActivity {
     }
 
 
+    public void onRefresh() {
+        Toast.makeText(this, "Clear Cache", Toast.LENGTH_SHORT).show();
+
+        mSwipeRefreshLayout.setRefreshing(true);
+        myEditor.putString("longitude", "34.77539057");
+        myEditor.putString("latitude", "32.07481721");
+        myEditor.putString("saved", "false");
+        myEditor.commit(); //"commit" saves the file
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mSwipeRefreshLayout.setRefreshing(false);
+                recreate();
+            }
+        }, 3000);
+    }
 }
