@@ -3,12 +3,16 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
+
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
+        <item name="colorPrimary">@color/ColorPrimary1</item>
+        <item name="colorPrimaryDark">@color/ColorPrimaryDark1</item>
     </style>
 
 
     <style name="RobotoTextViewStyle" parent="android:Widget.TextView">
         <item name="android:fontFamily">sans-serif-thin</item>
+        <item name="android:textColor">#ffffff</item>
     </style>
 
 

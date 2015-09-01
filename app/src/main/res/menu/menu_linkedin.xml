@@ -7,12 +7,12 @@
     <item android:id="@+id/homeActivity"
         android:title="homeactivity"
         android:icon="@drawable/homeicon"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
 
     <item android:id="@+id/navigate"
         android:title="navigate"
         android:icon="@drawable/navigation"
-        app:showAsAction="always"/>
+        app:showAsAction="never"/>
 
     <item android:id="@+id/mylinkdinpage"
         android:title="linkdinpage"
@@ -22,6 +22,6 @@
     <item android:id="@+id/showParkingLots"
         android:title="showParkingLots"
         android:icon="@drawable/parkinglots"
-        app:showAsAction="ifRoom"
+        app:showAsAction="never"
         />
 </menu>

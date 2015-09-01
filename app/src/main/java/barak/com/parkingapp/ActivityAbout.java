@@ -3,7 +3,9 @@ package barak.com.parkingapp;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,17 +22,24 @@ public class ActivityAbout extends AppCompatActivity {
 
     TextView t;
     VideoView v;
+    public Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_activity_about);
 
-        t=(TextView) findViewById(R.id.myCV);
+
+        toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
+        t = (TextView) findViewById(R.id.myCV);
         t.setTypeface(EasyFonts.robotoThin(this));
 
-        v =(VideoView) findViewById(R.id.videoViewAbout);
-        Uri myUri= Uri.parse("android.resource://"+getPackageName()+"/"+R.raw.awesome);
+        v = (VideoView) findViewById(R.id.videoViewAbout);
+        Uri myUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.awesome);
         v.setVideoURI(myUri);
         v.setMediaController(new MediaController(this));
         v.requestFocus();
@@ -50,17 +59,17 @@ public class ActivityAbout extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case R.id.homeActivity:
                 Intent myIntent;
-                myIntent= new Intent(this,HomeActivity.class);
+                myIntent = new Intent(this, HomeActivity.class);
                 startActivity(myIntent);
                 return true;
 
 
             case R.id.lastparkingplace:
                 Intent myIntentt;
-                myIntentt= new Intent(this,SaveLocationActivity.class);
+                myIntentt = new Intent(this, SaveLocationActivity.class);
                 startActivity(myIntentt);
                 return true;
             case R.id.showParkingLots:
@@ -76,28 +85,25 @@ public class ActivityAbout extends AppCompatActivity {
             case R.id.mylinkdinpage:
                 // composeMessage();
                 Intent myIntentLinkedin;
-                myIntentLinkedin= new Intent(this,LinkedinActivity.class);
+                myIntentLinkedin = new Intent(this, LinkedinActivity.class);
                 startActivity(myIntentLinkedin);
                 return true;
-
-
 
 
             default:
         }
 
 
-
-        switch(id) {
+        switch (id) {
             case R.id.action_settings:
                 Intent myIntentSettings;
-                myIntentSettings= new Intent(this,SettingsActivity.class);
+                myIntentSettings = new Intent(this, SettingsActivity.class);
                 startActivity(myIntentSettings);
                 //here is changing in the float icon aka settings
                 return true;
             case R.id.about_the_developer:
                 Intent myIntentAbout;
-                myIntentAbout= new Intent(this,ActivityAbout.class);
+                myIntentAbout = new Intent(this, ActivityAbout.class);
                 startActivity(myIntentAbout);
                 //here is changing in the float icon aka settings
                 return true;
@@ -114,7 +120,7 @@ public class ActivityAbout extends AppCompatActivity {
     public void openLinkedin(View view) {
 
         Intent myIntentLinkedin;
-        myIntentLinkedin= new Intent(this,LinkedinActivity.class);
+        myIntentLinkedin = new Intent(this, LinkedinActivity.class);
         startActivity(myIntentLinkedin);
     }
 
@@ -126,7 +132,7 @@ public class ActivityAbout extends AppCompatActivity {
         VideoView vid = (VideoView) findViewById(R.id.videoViewAbout);
         linear.setVisibility(view.GONE);
         vid.setVisibility(view.VISIBLE);
-       but.setVisibility(view.VISIBLE);
+        but.setVisibility(view.VISIBLE);
         butWatchmyVideo.setVisibility(view.GONE);
         //linear.setBackgroundColor(-256);
     }
@@ -147,7 +153,7 @@ public class ActivityAbout extends AppCompatActivity {
     public void openEmail(View view) {
         Intent emailIntent = new Intent(Intent.ACTION_SEND);
 
-        emailIntent.putExtra(Intent.EXTRA_EMAIL,"barakse11@gmail.com");
+        emailIntent.putExtra(Intent.EXTRA_EMAIL, "barakse11@gmail.com");
         emailIntent.setType("text/plain");
         startActivity(emailIntent);
     }

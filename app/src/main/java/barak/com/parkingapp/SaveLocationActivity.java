@@ -7,14 +7,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
-import android.os.SystemClock;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.os.SystemClock;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -24,6 +27,9 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 
 
 public class SaveLocationActivity extends ActionBarActivity implements LocationListener, OnMapReadyCallback {
@@ -52,37 +58,49 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_save_location);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
 
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
-        myEditor=myDBfile.edit();
+        myEditor = myDBfile.edit();
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
-        _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
+        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
-        Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude=l.getLongitude();
-        latitude=l.getLatitude();
+        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        longitude = l.getLongitude();
+        latitude = l.getLatitude();
 
-        a=String.valueOf(longitude);
-        b=String.valueOf(latitude);
 
-        myTextViewLati=(TextView)findViewById(R.id.latitude);
-        myTextViewLati.setText(Double.toString(latitude));
+        a = String.valueOf(longitude);
+        b = String.valueOf(latitude);
 
-        myTextViewLong=(TextView)findViewById(R.id.longtitude);
-        myTextViewLong.setText(Double.toString(longitude));
+
+        DecimalFormat df = new DecimalFormat("#.########");
+
+        df.setRoundingMode(RoundingMode.FLOOR);
+
+        double resultLO = new Double(df.format(longitude));
+        double resultLA = new Double(df.format(latitude));
+
+        myTextViewLati = (TextView) findViewById(R.id.latitude);
+        myTextViewLati.setText(Double.toString(resultLA));
+
+        myTextViewLong = (TextView) findViewById(R.id.longtitude);
+        myTextViewLong.setText(Double.toString(resultLO));
 
         ///----
-        myTextViewLatiNotationN=(TextView)findViewById(R.id.textViewNotationAltitude);
-        myTextViewLatiNotationN.setTextSize(20);
+        myTextViewLatiNotationN = (TextView) findViewById(R.id.textViewNotationAltitude);
         myTextViewLatiNotationN.setText(" °N");
 
-        myTextViewAltiNotationE=(TextView)findViewById(R.id.textViewNotationLongtitude);
-        myTextViewAltiNotationE.setTextSize(20);
+        myTextViewAltiNotationE = (TextView) findViewById(R.id.textViewNotationLongtitude);
         myTextViewAltiNotationE.setText(" °E");
 
 
@@ -112,9 +130,9 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
 
             case R.id.navigate:
-                String alt,lon;
-                lon=myDBfile.getString("longitude","34.77539057" );
-                alt=myDBfile.getString("latitude","32.07481721" );
+                String alt, lon;
+                lon = myDBfile.getString("longitude", "34.77539057");
+                alt = myDBfile.getString("latitude", "32.07481721");
                 gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(alt) + "," + Double.parseDouble(lon) + "&mode=w");
                 mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");
@@ -133,12 +151,6 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
                 }
 
 
-                return true;
-            case R.id.mylinkdinpage:
-                // composeMessage();
-                Intent myIntentLinkedin;
-                myIntentLinkedin = new Intent(this, LinkedinActivity.class);
-                startActivity(myIntentLinkedin);
                 return true;
 
 
@@ -172,14 +184,15 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     public void save(View view) {
 
 
-        saved=true;
+        int i;
+        saved = true;
         myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
         myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
         myEditor.putString("saved", Boolean.toString(saved));
-                myEditor.commit(); //"commit" saves the file
+        myEditor.commit(); //"commit" saves the file
 
         Intent myIntent;
-        myIntent= new Intent(this,HomeActivity.class);
+        myIntent = new Intent(this, HomeActivity.class);
         myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntent);
         finish();
@@ -189,19 +202,19 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     @Override
     public void onLocationChanged(Location location) {
 
-        _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
+        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
 
-        Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude=l.getLongitude();
-        latitude=l.getLatitude();
+        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        longitude = l.getLongitude();
+        latitude = l.getLatitude();
 
 
-        myTextViewLati=(TextView)findViewById(R.id.latitude);
+        myTextViewLati = (TextView) findViewById(R.id.latitude);
         myTextViewLati.setText(Double.toString(latitude));
 
-        myTextViewLong=(TextView)findViewById(R.id.longtitude);
+        myTextViewLong = (TextView) findViewById(R.id.longtitude);
         myTextViewLong.setText(Double.toString(longitude));
 
     }
@@ -225,7 +238,7 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     public void returnToMainActivity(View view) {
 
         Intent myIntentNew;
-        myIntentNew= new Intent(this,HomeActivity.class);
+        myIntentNew = new Intent(this, HomeActivity.class);
         myIntentNew.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         startActivity(myIntentNew);
 
@@ -235,52 +248,56 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
     public void updateCurrentLocation(View view) {
 
-        _manager =(LocationManager) getSystemService(this.LOCATION_SERVICE);
+        Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
 
-        Location l= _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude=l.getLongitude();
-        latitude=l.getLatitude();
+        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        longitude = l.getLongitude();
+        latitude = l.getLatitude();
 
 
-        myTextViewLati=(TextView)findViewById(R.id.latitude);
+
+        myTextViewLati = (TextView) findViewById(R.id.latitude);
         myTextViewLati.setText(Double.toString(latitude));
 
-        myTextViewLong=(TextView)findViewById(R.id.longtitude);
+        myTextViewLong = (TextView) findViewById(R.id.longtitude);
         myTextViewLong.setText(Double.toString(longitude));
 
     }
-/*
+
+    /*
+        @Override
+        protected void onStop() {
+            super.onStop(); // in case the app crashes - onStop will save the data
+
+            myEditor.putString("longitude", ((TextView) findViewById(R.id.longitude)).getText().toString());
+            myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
+            myEditor.commit();
+
+        }
+    */
     @Override
-    protected void onStop() {
-        super.onStop(); // in case the app crashes - onStop will save the data
-
-        myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
-        myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
-        myEditor.commit();
-
-    }
-*/
-@Override
-public void onMapReady(GoogleMap map) {
+    public void onMapReady(GoogleMap map) {
 
 
-    LatLng myLocation = new LatLng(latitude,longitude);
+        LatLng myLocation = new LatLng(latitude, longitude);
 
-    map.setMyLocationEnabled(true);
-    map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
-    Marker marker=null;
+        map.setMyLocationEnabled(true);
+        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+        Marker marker = null;
 
-        marker=map.addMarker(new MarkerOptions()
+        marker = map.addMarker(new MarkerOptions()
                 .title("This is your Car")
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
                 .snippet("Know where your car is located at anytime")
                 .position(myLocation));
 
-    dropPinEffect(marker);
+        dropPinEffect(marker);
 
-}
+    }
+
     private void dropPinEffect(final Marker marker) {
         // Handler allows us to repeat a code block after a specified delay
         final android.os.Handler handler = new android.os.Handler();

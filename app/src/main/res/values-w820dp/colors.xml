@@ -13,4 +13,5 @@
     <color name="primaryDark">#800000</color>
     <color name="light">#800080</color>
     <color name="accent">#FF0000</color>
+    <color name="colorpurple">#7B68EE</color>
 </resources>

@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -35,7 +36,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     SharedPreferences myDBfile;
     SharedPreferences.Editor myEditor;
 
-    String longtitude;
+    String longitude;
     String altitude;
 
     TextView tvWelcomeBack;
@@ -47,6 +48,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     TextView tvCarLocation;
 
     SwipeRefreshLayout mSwipeRefreshLayout;
+
     private Toolbar toolbar;
 
 
@@ -59,15 +61,20 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
         setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
 
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
-        mSwipeRefreshLayout.setColorSchemeResources(android.R.color.holo_green_light,
-                android.R.color.holo_blue_bright,
-                android.R.color.holo_orange_light,
-                android.R.color.holo_red_light);
-        mSwipeRefreshLayout.setOnRefreshListener(this);
+        int ori = getResources().getConfiguration().orientation;
+        if (ori == 1) {
+            mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipe);
+            mSwipeRefreshLayout.setColorSchemeResources(
+                    android.R.color.holo_blue_bright,
+                    android.R.color.holo_red_light,
+                    android.R.color.holo_orange_light,
+                    android.R.color.holo_green_light);
 
+            mSwipeRefreshLayout.setOnRefreshListener(this);
+        }
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -96,7 +103,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         String y = myDBfile.getString("CarType", "Honda");
         String z = myDBfile.getString("CarNumber", "11-222-33");
 
-        longtitude = myDBfile.getString("longitude", "34.77539057");
+        longitude = myDBfile.getString("longitude", "34.77539057");
         altitude = myDBfile.getString("latitude", "32.07481721");
 
         ((TextView) findViewById(R.id.driverNameID)).setText(x);
@@ -122,6 +129,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         int id = item.getItemId();
         Uri gmmIntentUri;
         Intent mapIntent;
+        Intent street;
         switch (item.getItemId()) {
             case R.id.lastparkingplace:
                 Intent myIntent;
@@ -141,19 +149,14 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 return true;
             case R.id.streetv:
-                gmmIntentUri = Uri.parse("http://maps.google.com/maps?q=&layer=c&cbll=" + Double.parseDouble(altitude) + "," + Double.parseDouble(longtitude) + "&cbp=11,0,0,0,0");
-                mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
-                mapIntent.setPackage("com.google.android.apps.maps");
-                if (mapIntent.resolveActivity(getPackageManager()) != null) {
-                    startActivity(mapIntent);
-
-                }
+                street = new Intent(this, StreetActivity.class);
+                startActivity(street);
 
                 return true;
 
             case R.id.clearCache:
 
-                Toast.makeText(this, "Tip - Next Time Swipe Down the Map to Refresh", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Tip - Next Time Swipe Down the Screen to Refresh", Toast.LENGTH_LONG).show();
                 myEditor.putString("longitude", "34.77539057");
                 myEditor.putString("latitude", "32.07481721");
                 myEditor.putString("saved", "false");
@@ -205,7 +208,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         Uri gmmIntentUri;
         Intent mapIntent;
 
-        gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(altitude) + "," + Double.parseDouble(longtitude) + "&mode=w");
+        gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(altitude) + "," + Double.parseDouble(longitude) + "&mode=w");
         mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         mapIntent.setPackage("com.google.android.apps.maps");
@@ -220,7 +223,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void onMapReady(GoogleMap map) {
 
 
-        LatLng sydney = new LatLng(Double.parseDouble(altitude), Double.parseDouble(longtitude));
+        LatLng sydney = new LatLng(Double.parseDouble(altitude), Double.parseDouble(longitude));
 
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
@@ -296,5 +299,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         }, 3000);
     }
 }
+
+
 
 

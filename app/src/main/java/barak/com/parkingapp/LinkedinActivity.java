@@ -3,8 +3,10 @@ package barak.com.parkingapp;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.webkit.WebSettings;
@@ -20,6 +22,11 @@ public class LinkedinActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_linkedin);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
         myWebViewHomeAct = (WebView) findViewById(R.id.webViewLinkedin);
         WebViewClient myClient = new WebViewClient();
@@ -52,9 +59,8 @@ public class LinkedinActivity extends ActionBarActivity {
         int id = item.getItemId();
 
         SharedPreferences myDBfile; // create a file or return a reference to an exist file
-        SharedPreferences.Editor myEditor;
-        myDBfile =getSharedPreferences("file1",MODE_PRIVATE);
-        myEditor=myDBfile.edit();
+        myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
+
         Uri gmmIntentUri;
         Intent mapIntent;
         switch (item.getItemId()) {
@@ -66,9 +72,9 @@ public class LinkedinActivity extends ActionBarActivity {
 
 
             case R.id.navigate:
-                String alt,lon;
-                lon=myDBfile.getString("longitude","100" );
-                alt=myDBfile.getString("latitude","100" );
+                String alt, lon;
+                lon = myDBfile.getString("longitude", "100");
+                alt = myDBfile.getString("latitude", "100");
                 gmmIntentUri = Uri.parse("google.navigation:q=" + Double.parseDouble(alt) + "," + Double.parseDouble(lon) + "&mode=w");
                 mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
                 mapIntent.setPackage("com.google.android.apps.maps");

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Parking APP</string>
+    <string name="CarLocationTextNew">Emplacement de votre véhicule</string>
+    <string name="EnterCarType">Choisissez un type de véhicule</string>
+    <string name="action_settings">Paramètres</string>
+    <string name="appwidget_text">Sauvegarder emplacement</string>
+    <string name="automatic">Automatique</string>
+    <string name="backbutton">Retour</string>
+    <string name="manual">Manuel</string>
+    <string name="car_number">Numéro du véhicule</string>
+    <string name="car_type">Type de véhicule</string>
+    <string name="enterCarNumber">Tapez le numéro du véhicule</string>
+    <string name="enterName">Tapez votre nom</string>
+    <string name="save_question">Voulez-vous sauvegarder votre emplacement actuel ?</string>
+    <string name="savebutton">Sauvegarder</string>
+    <string name="title_activity_activity_about">A propos du développeur</string>
+    <string name="title_activity_linkedin">Page LinkedIn de Barak</string>
+    <string name="title_activity_navigate">Naviguer</string>
+    <string name="title_activity_maps">Plan</string>
+    <string name="title_activity_parking_lots_maps">Plan</string>
+    <string name="title_activity_save_location">Sauvegarder votre position</string>
+    <string name="title_activity_settings">Paramètres</string>
+    <string name="welcome">Bienvenue</string>
+    <string name="your_car_is_located">Emplacement actuel de votre véhicule :</string>
+    <string name="CarLocationText">Emplacement de votre véhicule</string>
+    <string name="add_widget">Add widget</string>
+    <string name="cv_file">WORK EXPERIENCE \t\t\t November 2014 – Present  \t\tTier 1 Support Representative\t\t\t IBM Trusteer, Tel-Aviv-Yafo Technical Support for the company\'s security software through several communication channels. Detection of Phishing websites, brand abuse and fraudulent websites.  2011-2014 \tSenior Representative \t\tTeleOffice call center, Rishon Lezion \t\tProvided technical assistance to phone representative.  \t\tInteracted with customers to provide and process information in response to \t\t\t\ttheir enquiries. Worked with CRMc, Oracle IS, and CCMA software.   2009-2010\tFirst Aid Instructor \t\tHa-Merkaz Le-Refuat Chirum, Petach-Tikva. \t\tTaught and trained First Aid classes for individuals and groups.  2011\tSeasonal job as a mobile Clinic Manager in scout summer camps HaTsofim. Tasks included managing a team of 10-15 paramedics and an assigned doctor available 24/7 for over 3,000 children.</string>
+</resources>
