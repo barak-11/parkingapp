@@ -24,6 +24,10 @@
         android:title="Clear Cache"
         app:showAsAction="never"
         />
+    <item android:id="@+id/historynew"
+        android:title="History"
+        app:showAsAction="never"
+        />
 
     <!-- Settings, should always be in the overflow -->
 

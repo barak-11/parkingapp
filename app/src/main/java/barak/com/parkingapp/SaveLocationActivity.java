@@ -3,6 +3,7 @@ package barak.com.parkingapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -12,6 +13,7 @@ import android.os.SystemClock;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -28,24 +30,37 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 
 
 public class SaveLocationActivity extends ActionBarActivity implements LocationListener, OnMapReadyCallback {
 
     public static boolean saved = false;
-
+    final static int MAX_HISTORY_SIZE = 30;
     SharedPreferences myDBfile; // create a file or return a reference to an exist file
     SharedPreferences.Editor myEditor;
+    SharedPreferences myDBfileNew; // create a file or return a reference to an exist file
+    SharedPreferences.Editor myEditorNew;
 
     LocationManager _manager;
+
+    boolean exists=false;
 
     double longitude;
     double latitude;
 
+    String [] history = new String[MAX_HISTORY_SIZE];
+    Boolean [] historyBool = new Boolean[MAX_HISTORY_SIZE];
+
     String a;
     String b;
+
+    int k=-1;
+    int index;
+    int keeper=0;
 
     TextView myTextViewLati;
     TextView myTextViewLong;
@@ -64,8 +79,20 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         actionBar.setDisplayHomeAsUpEnabled(true);
 
 
+
+
+        for (int i=0;i<historyBool.length;i++)
+        {
+            historyBool[i]=false;
+        }
+
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
         myEditor = myDBfile.edit();
+        myDBfileNew = getSharedPreferences("file2", MODE_PRIVATE);
+        myEditorNew = myDBfileNew.edit();
+
+        index = myDBfile.getInt("Index", 0);
+
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -77,6 +104,7 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         longitude = l.getLongitude();
         latitude = l.getLatitude();
+
 
 
         a = String.valueOf(longitude);
@@ -181,15 +209,47 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
     }
 
 
-    public void save(View view) {
+    public void save(View view) throws IOException {
 
+        History history = new History();
+        Geocoder geocoder = new Geocoder();
 
-        int i;
+        exists=false;
         saved = true;
         myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
         myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
         myEditor.putString("saved", Boolean.toString(saved));
+
+        if (isFirstTime()) {
+            myEditorNew.putString("k","0");
+        }
+        LatLng myLocation = new LatLng(latitude, longitude);
+        if (history.mylist==null) {
+            history.mylist = new ArrayList<String>();
+        }
+        history.mylist.add(myLocation.toString());
+
+
+        if (geocoder.addresses==null) {
+            geocoder.addresses = new ArrayList<Address>();
+        }
+
+        String test=myDBfileNew.getString("k","0");
+        Log.d("k1", test);
+        k=Integer.parseInt(test);
+        if (k>100)
+        {
+            k=0;
+        }
+        myEditorNew.putString("test["+k+"]",myLocation.toString());
+        k++;
+
+        myEditorNew.putString("k",Integer.toString(k));
+
+        myEditorNew.commit();
         myEditor.commit(); //"commit" saves the file
+
+
 
         Intent myIntent;
         myIntent = new Intent(this, HomeActivity.class);
@@ -330,6 +390,21 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         });
     }
 
+    private boolean isFirstTime()
+    {
+        SharedPreferences preferences = getPreferences(MODE_PRIVATE);
+        boolean ranBefore = preferences.getBoolean("RanBefore", false);
+        if (!ranBefore) {
+
+            SharedPreferences.Editor editor = preferences.edit();
+            editor.putBoolean("RanBefore", true);
+            editor.commit();
+            // Send the SMS
+
+        }
+        return ranBefore;
+
+    }
 
 }
 

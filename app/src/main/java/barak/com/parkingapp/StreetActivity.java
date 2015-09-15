@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -20,6 +21,7 @@ public class StreetActivity extends AppCompatActivity implements OnStreetViewPan
     SharedPreferences.Editor myEditor;
     String longitude;
     String altitude;
+    Boolean flagFromGeocoder;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +31,23 @@ public class StreetActivity extends AppCompatActivity implements OnStreetViewPan
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
         myEditor = myDBfile.edit();
 
-        longitude = myDBfile.getString("longitude", "34.77539057");
-        altitude = myDBfile.getString("latitude", "32.07481721");
+        flagFromGeocoder = myDBfile.getBoolean("flagFromGeocoder",false);
+
+        if (flagFromGeocoder&&Geocoder.latlngNe.longitude>10)
+        {
+            Log.d("flagFromGeocoder",flagFromGeocoder.toString());
+            longitude=Double.toString(Geocoder.latlngNe.longitude);
+            altitude=Double.toString(Geocoder.latlngNe.latitude);
+            myEditor.putBoolean("flagFromGeocoder", false);
+            myEditor.commit();
+
+        }
+
+        else {
+            longitude = myDBfile.getString("longitude", "34.77539057");
+            altitude = myDBfile.getString("latitude", "32.07481721");
+        }
+
 
 
         setContentView(R.layout.activity_street);

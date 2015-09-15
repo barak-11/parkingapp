@@ -12,6 +12,7 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -130,6 +131,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
         Uri gmmIntentUri;
         Intent mapIntent;
         Intent street;
+        Intent history;
         switch (item.getItemId()) {
             case R.id.lastparkingplace:
                 Intent myIntent;
@@ -151,6 +153,11 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
             case R.id.streetv:
                 street = new Intent(this, StreetActivity.class);
                 startActivity(street);
+
+                return true;
+            case R.id.historynew:
+                history = new Intent(this, Geocoder.class);
+                startActivity(history);
 
                 return true;
 
@@ -225,10 +232,13 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         LatLng sydney = new LatLng(Double.parseDouble(altitude), Double.parseDouble(longitude));
 
+        Log.d("sydney",sydney.toString());
+
         map.setMyLocationEnabled(true);
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(sydney, 12));
         Marker marker = null;
-        String temp = myDBfile.getString("saved", "false");
+        String temp = myDBfile.getString("saved","false");
+        Log.d("myDBFiletemp",temp);
 
 
         if (temp.equals("false")) {

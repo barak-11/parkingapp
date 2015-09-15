@@ -13,8 +13,8 @@
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_navigate">Navigate</string>
     <string name="welcome">Welcome</string>
-    <string name="car_number">Car Number</string>
-    <string name="car_type">Car Type</string>
+    <string name="car_number">Car Number :</string>
+    <string name="car_type">Car Type :</string>
     <string name="your_car_is_located">Your Car Is Currently Located at:</string>
     <string name="save_question">Save current location?</string>
     <string name="enterName">Enter Your Name</string>
@@ -34,5 +34,13 @@
     <string name="home" translatable="false">Home</string>
     <string name="near" translatable="false">Nearest Parking Lots</string>
     <string name="title_activity_street" translatable="false">StreetActivity</string>
+    <string name="title_activity_geocoder" translatable="false">Geocoder</string>
+
+    <string-array name="menu">
+        <item>Set as Your Car\'s Location</item>
+        <item>Navigate to</item>
+        <item>Street View</item>
+        <item>Edit Location Name</item>
+    </string-array>
 
 </resources>

@@ -26,7 +26,6 @@
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity
             android:name=".SaveLocationActivity"
@@ -52,7 +51,6 @@
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyCmobSna1Qui0mAX_dSTLxlD4gL_Kj11fk" />
@@ -69,8 +67,20 @@
 
         <activity
             android:name=".StreetActivity"
-            android:label="@string/title_activity_street">
+            android:label="@string/title_activity_street" >
+        </activity>
+        <activity
+            android:name=".History"
+            android:label="@string/title_activity_history" >
+        </activity>
+        <activity
+            android:name=".Geocoder"
+            android:label="@string/title_activity_geocoder" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
 
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
