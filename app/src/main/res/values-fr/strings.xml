@@ -27,4 +27,11 @@
     <string name="add_widget">Add widget</string>
     <string name="cv_file">WORK EXPERIENCE \t\t\t November 2014 – Present  \t\tTier 1 Support Representative\t\t\t IBM Trusteer, Tel-Aviv-Yafo Technical Support for the company\'s security software through several communication channels. Detection of Phishing websites, brand abuse and fraudulent websites.  2011-2014 \tSenior Representative \t\tTeleOffice call center, Rishon Lezion \t\tProvided technical assistance to phone representative.  \t\tInteracted with customers to provide and process information in response to \t\t\t\ttheir enquiries. Worked with CRMc, Oracle IS, and CCMA software.   2009-2010\tFirst Aid Instructor \t\tHa-Merkaz Le-Refuat Chirum, Petach-Tikva. \t\tTaught and trained First Aid classes for individuals and groups.  2011\tSeasonal job as a mobile Clinic Manager in scout summer camps HaTsofim. Tasks included managing a team of 10-15 paramedics and an assigned doctor available 24/7 for over 3,000 children.</string>
 
+    <string-array name="menu">
+        <item>Set as Your Car\'s Location</item>
+        <item>Navigate to</item>
+        <item>Street View</item>
+        <item>Delete</item>
+        <item>Edit Location Name</item>
+    </string-array>
 </resources>

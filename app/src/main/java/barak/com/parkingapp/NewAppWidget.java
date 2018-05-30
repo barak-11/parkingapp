@@ -17,15 +17,18 @@ public class NewAppWidget extends AppWidgetProvider {
             final int N = appWidgetIds.length;
 
             // Perform this loop procedure for each App Widget that belongs to this provider
+
             for (int i=0; i<N; i++) {
                 int appWidgetId = appWidgetIds[i];
 
                 // Create an Intent to launch ExampleActivity
                 Intent intent = new Intent(context, SaveLocationActivity.class);
+
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
                 // Get the layout for the App Widget and attach an on-click listener
                 // to the button
+
                 RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.new_app_widget);
                 views.setOnClickPendingIntent(R.id.imageView3, pendingIntent);
 

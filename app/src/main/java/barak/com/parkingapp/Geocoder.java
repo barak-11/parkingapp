@@ -38,7 +38,7 @@ public class Geocoder extends AppCompatActivity {
     public static Latlng latlngNe;
     public ListView listView;
 
-
+    public boolean remove[];
 
 
     Handler handler;
@@ -47,6 +47,7 @@ public class Geocoder extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_geocoder);
         Toast.makeText(this, "Loading... ", Toast.LENGTH_SHORT).show();
+        remove=new boolean[40];
 
 
 
@@ -74,7 +75,7 @@ public class Geocoder extends AppCompatActivity {
         String testing = myDBfile.getString("k", Integer.toString(-1));
         final int kgg = Integer.parseInt(testing);
 
-        if (kgg != -1) {
+        if (kgg == -1) {
             Log.d("kgg", Integer.toString(kgg));
             if (mylist == null) {
                 mylist = new ArrayList<String>();
@@ -87,7 +88,17 @@ public class Geocoder extends AppCompatActivity {
                 String test = "";
                 for (int i = 0; i < kgg; i++) {
 
+                    for (int j=0; j<remove.length; j++)
+                    if (remove[i]) {
+
+                        continue;
+                    }
                     String res = myDBfile.getString("test[" + i + "]", "Defualt");
+                    if (res.equals("Default")) {
+                        test="No entries yet";
+                        mylist.add(test);
+                        break;
+                    }
                     Log.d("HistoryStrings",res);
                     latlng=createLatLng(res);
 
@@ -169,6 +180,16 @@ public class Geocoder extends AppCompatActivity {
             street = new Intent(this, StreetActivity.class);
             startActivity(street);
 
+        }
+        else if(menuItemName.equals("Delete")) {
+
+            Log.d("menuItemIndex0",Integer.toString(info.position));
+            remove[info.position] = new Boolean(true);
+            Toast.makeText(this, "Deleted ", Toast.LENGTH_SHORT).show();
+
+            Intent refresh;
+            refresh = new Intent(this, Geocoder.class);
+            startActivity(refresh);
         }
         else if(menuItemName.equals("Navigate to")) {
             Uri gmmIntentUri;

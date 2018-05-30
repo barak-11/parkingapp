@@ -31,11 +31,12 @@ public class StreetActivity extends AppCompatActivity implements OnStreetViewPan
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
         myEditor = myDBfile.edit();
 
-        flagFromGeocoder = myDBfile.getBoolean("flagFromGeocoder",false);
+        flagFromGeocoder = myDBfile.getBoolean("flagFromGeocoder", false);
+        Log.d("flagFromGeocoder", flagFromGeocoder.toString());
 
         if (flagFromGeocoder&&Geocoder.latlngNe.longitude>10)
         {
-            Log.d("flagFromGeocoder",flagFromGeocoder.toString());
+            //Log.d("flagFromGeocoder",flagFromGeocoder.toString());
             longitude=Double.toString(Geocoder.latlngNe.longitude);
             altitude=Double.toString(Geocoder.latlngNe.latitude);
             myEditor.putBoolean("flagFromGeocoder", false);

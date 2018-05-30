@@ -11,7 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -36,7 +36,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 
 
-public class SaveLocationActivity extends ActionBarActivity implements LocationListener, OnMapReadyCallback {
+public class SaveLocationActivity extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
 
     public static boolean saved = false;
     final static int MAX_HISTORY_SIZE = 30;
@@ -81,6 +81,7 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
 
 
 
+
         for (int i=0;i<historyBool.length;i++)
         {
             historyBool[i]=false;
@@ -101,6 +102,15 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
+        if (_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER)==null) {
+            Toast.makeText(this, "No GPS signal", Toast.LENGTH_SHORT).show();
+            Intent myIntent;
+            myIntent = new Intent(this, HomeActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(myIntent);
+            finish();
+
+        }
         Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         longitude = l.getLongitude();
         latitude = l.getLatitude();
@@ -131,6 +141,13 @@ public class SaveLocationActivity extends ActionBarActivity implements LocationL
         myTextViewAltiNotationE = (TextView) findViewById(R.id.textViewNotationLongtitude);
         myTextViewAltiNotationE.setText(" °E");
 
+
+    }
+
+    void somefunction () throws IOException {
+
+                SaveLocationActivity sa = new SaveLocationActivity();
+                sa.save(null);
 
     }
 
