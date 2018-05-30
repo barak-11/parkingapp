@@ -190,8 +190,13 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
 
                 return true;
             case R.id.historynew:
-                history = new Intent(this, Geocoder.class);
-                startActivity(history);
+                try{
+                    history = new Intent(this, Geocoder.class);
+                    startActivity(history);
+                }catch (Exception e){
+                    Toast.makeText(this, "History: "+e.getMessage(), Toast.LENGTH_LONG).show();
+                }
+
 
                 return true;
 

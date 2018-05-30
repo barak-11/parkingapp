@@ -37,13 +37,14 @@ public class ActivityAbout extends AppCompatActivity {
 
         t = (TextView) findViewById(R.id.myCV);
         t.setTypeface(EasyFonts.robotoThin(this));
-
+/*
         v = (VideoView) findViewById(R.id.videoViewAbout);
         Uri myUri = Uri.parse("android.resource://" + getPackageName() + "/" + R.raw.awesome);
         v.setVideoURI(myUri);
         v.setMediaController(new MediaController(this));
         v.requestFocus();
         v.start();
+        */
     }
 
     @Override

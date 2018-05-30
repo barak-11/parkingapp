@@ -73,20 +73,23 @@ public class Geocoder extends AppCompatActivity {
 
 
         String testing = myDBfile.getString("k", Integer.toString(-1));
-        final int kgg = Integer.parseInt(testing);
+        final int listSize = Integer.parseInt(testing);
 
-        if (kgg == -1) {
-            Log.d("kgg", Integer.toString(kgg));
+        if (listSize == -1) {
+            Log.d("listSize", Integer.toString(listSize));
             if (mylist == null) {
                 mylist = new ArrayList<String>();
             }
+            else {
+                mylist.clear();
+            }
         }
-        mylist.clear();
+        mylist = new ArrayList<String>();
         Runnable r = new Runnable() {
             @Override
             public void run() {
                 String test = "";
-                for (int i = 0; i < kgg; i++) {
+                for (int i = 0; i < listSize; i++) {
 
                     for (int j=0; j<remove.length; j++)
                     if (remove[i]) {

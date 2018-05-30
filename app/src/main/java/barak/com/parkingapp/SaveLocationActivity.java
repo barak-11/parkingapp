@@ -3,6 +3,7 @@ package barak.com.parkingapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Location;
 import android.location.LocationListener;
@@ -10,6 +11,7 @@ import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -98,7 +100,10 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+            return;
+        }
         _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
         _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
@@ -254,7 +259,7 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
         String test=myDBfileNew.getString("k","0");
         Log.d("k1", test);
         k=Integer.parseInt(test);
-        if (k>100)
+        if (k>200)
         {
             k=0;
         }
