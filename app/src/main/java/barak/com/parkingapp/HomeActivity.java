@@ -268,7 +268,7 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     public void onMapReady(GoogleMap map) {
 
-
+    try{
         LatLng sydney = new LatLng(Double.parseDouble(altitude), Double.parseDouble(longitude));
 
         Log.d("sydney",sydney.toString());
@@ -301,6 +301,10 @@ public class HomeActivity extends AppCompatActivity implements OnMapReadyCallbac
                     .snippet("This is Where You've Parked Your Car")
                     .position(sydney));
         }
+    }catch (Exception e){
+        Toast.makeText(this, "onMapReady: "+e.getMessage(), Toast.LENGTH_LONG).show();
+    }
+
 
 
     }

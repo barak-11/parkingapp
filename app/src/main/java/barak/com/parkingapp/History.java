@@ -26,7 +26,7 @@ public class History extends Activity {
     String[] valuesdebug;
     public static List<String> mylist;
 
-    public int kgg = 0;
+    public int listSize = 0;
     double test = 0;
 
     @Override
@@ -37,30 +37,30 @@ public class History extends Activity {
         myDBfile = getSharedPreferences("file2", MODE_PRIVATE);
         myEditor = myDBfile.edit();
 
+        try{
+            String testing = myDBfile.getString("k", Integer.toString(-1));
+            listSize = Integer.parseInt(testing);
+            mylist = new ArrayList<String>();
+            if (listSize != -1) {
+                mylist.clear();
+                for (int i = 0; i < listSize; i++) {
+                    //if (i>listSize)break;
+                    String res = myDBfile.getString("test[" + i + "]", "Defualt");
+                    //test = returnLatitudeOld(res);
+                    //Log.d("returnLat",Double.toString(test));
+                    mylist.add(res);
+                }
+            }
 
-        String testing = myDBfile.getString("k", Integer.toString(-1));
-        kgg = Integer.parseInt(testing);
+            listView = (ListView) findViewById(R.id.listViewNew);
 
-        if (kgg != -1) {
-            Log.d("kgg", Integer.toString(kgg));
             if (mylist == null) {
                 mylist = new ArrayList<String>();
             }
-            mylist.clear();
-            for (int i = 0; i < kgg; i++) {
-                //if (i>kgg)break;
-                String res = myDBfile.getString("test[" + i + "]", "Defualt");
-                //test = returnLatitudeOld(res);
-                //Log.d("returnLat",Double.toString(test));
-                mylist.add(res);
-            }
+        }catch (Exception e){
+            Toast.makeText(this, "getting Data error: "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        listView = (ListView) findViewById(R.id.listViewNew);
-
-        if (mylist == null) {
-            mylist = new ArrayList<String>();
-        }
         //editStringValues(mylist);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this,

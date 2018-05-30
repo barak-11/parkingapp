@@ -99,26 +99,30 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        try{
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
-        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return;
+            }
+            _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
-            return;
+            if (_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER)==null) {
+                Toast.makeText(this, "No GPS signal", Toast.LENGTH_SHORT).show();
+                Intent myIntent;
+                myIntent = new Intent(this, HomeActivity.class);
+                myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(myIntent);
+                finish();
+
+            }
+            Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            longitude = l.getLongitude();
+            latitude = l.getLatitude();
+        }catch (Exception e){
+            Toast.makeText(this, "SaveLocationActivity OnCreate:: "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3 * 60 * 1000, 1, this);
 
-        if (_manager.getLastKnownLocation(LocationManager.GPS_PROVIDER)==null) {
-            Toast.makeText(this, "No GPS signal", Toast.LENGTH_SHORT).show();
-            Intent myIntent;
-            myIntent = new Intent(this, HomeActivity.class);
-            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            startActivity(myIntent);
-            finish();
-
-        }
-        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = l.getLongitude();
-        latitude = l.getLatitude();
 
 
 
@@ -232,65 +236,73 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
 
     public void save(View view) throws IOException {
+        try{
+            History history = new History();
+            Geocoder geocoder = new Geocoder();
 
-        History history = new History();
-        Geocoder geocoder = new Geocoder();
+            exists=false;
+            saved = true;
+            myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
+            myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
+            myEditor.putString("saved", Boolean.toString(saved));
 
-        exists=false;
-        saved = true;
-        myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
-        myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
-        myEditor.putString("saved", Boolean.toString(saved));
+            if (isFirstTime()) {
+                myEditorNew.putString("k","0");
+            }
+            LatLng myLocation = new LatLng(latitude, longitude);
+            if (history.mylist==null) {
+                history.mylist = new ArrayList<String>();
+            }
+            history.mylist.add(myLocation.toString());
 
-        if (isFirstTime()) {
-            myEditorNew.putString("k","0");
+
+            if (geocoder.addresses==null) {
+                geocoder.addresses = new ArrayList<Address>();
+            }
+
+            String test=myDBfileNew.getString("k","0");
+            Log.d("k1", test);
+            k=Integer.parseInt(test);
+            if (k>200)
+            {
+                k=0;
+            }
+            myEditorNew.putString("test["+k+"]",myLocation.toString());
+            k++;
+
+            myEditorNew.putString("k",Integer.toString(k));
+
+            myEditorNew.commit();
+            myEditor.commit(); //"commit" saves the file
+
+
+
+            Intent myIntent;
+            myIntent = new Intent(this, HomeActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(myIntent);
+            finish();
+        }catch (Exception e){
+            Toast.makeText(this, "Save: "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
-        LatLng myLocation = new LatLng(latitude, longitude);
-        if (history.mylist==null) {
-            history.mylist = new ArrayList<String>();
-        }
-        history.mylist.add(myLocation.toString());
 
-
-        if (geocoder.addresses==null) {
-            geocoder.addresses = new ArrayList<Address>();
-        }
-
-        String test=myDBfileNew.getString("k","0");
-        Log.d("k1", test);
-        k=Integer.parseInt(test);
-        if (k>200)
-        {
-            k=0;
-        }
-        myEditorNew.putString("test["+k+"]",myLocation.toString());
-        k++;
-
-        myEditorNew.putString("k",Integer.toString(k));
-
-        myEditorNew.commit();
-        myEditor.commit(); //"commit" saves the file
-
-
-
-        Intent myIntent;
-        myIntent = new Intent(this, HomeActivity.class);
-        myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        startActivity(myIntent);
-        finish();
     }
 
 
     @Override
     public void onLocationChanged(Location location) {
+        try{
+            _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
-        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
+            Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            longitude = l.getLongitude();
+            latitude = l.getLatitude();
+        }catch (Exception e){
+            Toast.makeText(this, "onLocationChanged: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
-        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = l.getLongitude();
-        latitude = l.getLatitude();
 
 
         myTextViewLati = (TextView) findViewById(R.id.latitude);
@@ -329,15 +341,19 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
 
     public void updateCurrentLocation(View view) {
+        try{
+            Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+            _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
+            _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
-        Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
-        _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
-        _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
+            Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            longitude = l.getLongitude();
+            latitude = l.getLatitude();
+        }catch (Exception e){
+            Toast.makeText(this, "updateCurrentLocation: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
-        Location l = _manager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        longitude = l.getLongitude();
-        latitude = l.getLatitude();
 
 
 
@@ -363,20 +379,24 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
     @Override
     public void onMapReady(GoogleMap map) {
 
+        try{
+            LatLng myLocation = new LatLng(latitude, longitude);
 
-        LatLng myLocation = new LatLng(latitude, longitude);
+            map.setMyLocationEnabled(true);
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
+            Marker marker = null;
 
-        map.setMyLocationEnabled(true);
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
-        Marker marker = null;
+            marker = map.addMarker(new MarkerOptions()
+                    .title("This is your Car")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
+                    .snippet("Know where your car is located at anytime")
+                    .position(myLocation));
 
-        marker = map.addMarker(new MarkerOptions()
-                .title("This is your Car")
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA))
-                .snippet("Know where your car is located at anytime")
-                .position(myLocation));
+            dropPinEffect(marker);
+        }catch (Exception e){
+            Toast.makeText(this, "onMapReady: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
-        dropPinEffect(marker);
 
     }
 

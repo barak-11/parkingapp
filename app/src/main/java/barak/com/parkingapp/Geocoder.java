@@ -49,17 +49,21 @@ public class Geocoder extends AppCompatActivity {
         Toast.makeText(this, "Loading... ", Toast.LENGTH_SHORT).show();
         remove=new boolean[40];
 
+        try{
+            handler = new Handler() {
+                @Override
+                public void handleMessage(Message msg) {
+
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
+                            android.R.layout.activity_list_item, android.R.id.text1, mylist);
+                    listView.setAdapter(adapter);
+                }
+            };
+        }catch (Exception e){
+            Toast.makeText(this, "handler: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
 
-        handler = new Handler() {
-            @Override
-            public void handleMessage(Message msg) {
-
-                ArrayAdapter<String> adapter = new ArrayAdapter<>(getApplicationContext(),
-                        android.R.layout.activity_list_item, android.R.id.text1, mylist);
-                listView.setAdapter(adapter);
-            }
-        };
 
         listView = (ListView) findViewById(R.id.listViewGeo);
 
@@ -69,52 +73,54 @@ public class Geocoder extends AppCompatActivity {
         myDBfileNew = getSharedPreferences("file1", MODE_PRIVATE);
         myEditorNew = myDBfileNew.edit();
 
-        String test = "";
+        try{
+            String testing = myDBfile.getString("k", Integer.toString(-1));
+            final int listSize = Integer.parseInt(testing);
 
-
-        String testing = myDBfile.getString("k", Integer.toString(-1));
-        final int listSize = Integer.parseInt(testing);
-
-        if (listSize == -1) {
-            Log.d("listSize", Integer.toString(listSize));
-            if (mylist == null) {
-                mylist = new ArrayList<String>();
-            }
-            else {
-                mylist.clear();
-            }
-        }
-        mylist = new ArrayList<String>();
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                String test = "";
-                for (int i = 0; i < listSize; i++) {
-
-                    for (int j=0; j<remove.length; j++)
-                    if (remove[i]) {
-
-                        continue;
-                    }
-                    String res = myDBfile.getString("test[" + i + "]", "Defualt");
-                    if (res.equals("Default")) {
-                        test="No entries yet";
-                        mylist.add(test);
-                        break;
-                    }
-                    Log.d("HistoryStrings",res);
-                    latlng=createLatLng(res);
-
-                    test = getAddress(latlng.latitude, latlng.longitude,1);
-                    mylist.add(test);
+            if (listSize == -1) {
+                Log.d("listSize", Integer.toString(listSize));
+                if (mylist == null) {
+                    mylist = new ArrayList<String>();
                 }
-                handler.sendEmptyMessage(0);
+                else {
+                    mylist.clear();
+                }
             }
+            mylist = new ArrayList<String>();
+            Runnable r = new Runnable() {
+                @Override
+                public void run() {
+                    String test = "";
+                    for (int i = 0; i < listSize; i++) {
 
-        };
+                        for (int j=0; j<remove.length; j++)
+                            if (remove[i]) {
 
-        Thread testThread = new Thread(r);
-        testThread.start();
+                                continue;
+                            }
+                        String res = myDBfile.getString("test[" + i + "]", "Defualt");
+                        if (res.equals("Default")) {
+                            test="No entries yet";
+                            mylist.add(test);
+                            break;
+                        }
+                        Log.d("HistoryStrings",res);
+                        latlng=createLatLng(res);
+
+                        test = getAddress(latlng.latitude, latlng.longitude,1);
+                        mylist.add(test);
+                    }
+                    handler.sendEmptyMessage(0);
+                }
+
+            };
+
+            Thread testThread = new Thread(r);
+            testThread.start();
+        }catch (Exception e){
+            Toast.makeText(this, "Retrieving data error: "+e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+
 
 
 

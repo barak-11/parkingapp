@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.OnStreetViewPanoramaReadyCallback;
 import com.google.android.gms.maps.StreetViewPanorama;
@@ -27,35 +28,39 @@ public class StreetActivity extends AppCompatActivity implements OnStreetViewPan
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        try{
+            myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
+            myEditor = myDBfile.edit();
 
-        myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
-        myEditor = myDBfile.edit();
+            flagFromGeocoder = myDBfile.getBoolean("flagFromGeocoder", false);
+            Log.d("flagFromGeocoder", flagFromGeocoder.toString());
 
-        flagFromGeocoder = myDBfile.getBoolean("flagFromGeocoder", false);
-        Log.d("flagFromGeocoder", flagFromGeocoder.toString());
+            if (flagFromGeocoder&&Geocoder.latlngNe.longitude>10)
+            {
+                //Log.d("flagFromGeocoder",flagFromGeocoder.toString());
+                longitude=Double.toString(Geocoder.latlngNe.longitude);
+                altitude=Double.toString(Geocoder.latlngNe.latitude);
+                myEditor.putBoolean("flagFromGeocoder", false);
+                myEditor.commit();
 
-        if (flagFromGeocoder&&Geocoder.latlngNe.longitude>10)
-        {
-            //Log.d("flagFromGeocoder",flagFromGeocoder.toString());
-            longitude=Double.toString(Geocoder.latlngNe.longitude);
-            altitude=Double.toString(Geocoder.latlngNe.latitude);
-            myEditor.putBoolean("flagFromGeocoder", false);
-            myEditor.commit();
+            }
 
+            else {
+                longitude = myDBfile.getString("longitude", "34.77539057");
+                altitude = myDBfile.getString("latitude", "32.07481721");
+            }
+
+
+
+            setContentView(R.layout.activity_street);
+            StreetViewPanoramaFragment streetViewPanoramaFragment =
+                    (StreetViewPanoramaFragment) getFragmentManager()
+                            .findFragmentById(R.id.streetviewpanorama);
+            streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
+        }catch (Exception e){
+            Toast.makeText(this, "Street: "+e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        else {
-            longitude = myDBfile.getString("longitude", "34.77539057");
-            altitude = myDBfile.getString("latitude", "32.07481721");
-        }
-
-
-
-        setContentView(R.layout.activity_street);
-        StreetViewPanoramaFragment streetViewPanoramaFragment =
-                (StreetViewPanoramaFragment) getFragmentManager()
-                        .findFragmentById(R.id.streetviewpanorama);
-        streetViewPanoramaFragment.getStreetViewPanoramaAsync(this);
     }
 
     @Override
