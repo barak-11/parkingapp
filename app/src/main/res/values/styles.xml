@@ -3,10 +3,10 @@
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
 
-
         <item name="android:textViewStyle">@style/RobotoTextViewStyle</item>
         <item name="colorPrimary">@color/ColorPrimary1</item>
         <item name="colorPrimaryDark">@color/ColorPrimaryDark1</item>
+        <item name="android:itemBackground">#808080	</item>
     </style>
 
 
@@ -14,6 +14,8 @@
         <item name="android:fontFamily">sans-serif-thin</item>
         <item name="android:textColor">#ffffff</item>
     </style>
-
+    <style name="CircularProgress" parent="Theme.AppCompat.Light">
+        <item name="colorAccent">#9F489B</item>
+    </style>
 
 </resources>

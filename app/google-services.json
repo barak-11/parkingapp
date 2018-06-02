@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "151469461500",
+    "firebase_url": "https://parking-app-1038.firebaseio.com",
+    "project_id": "parking-app-1038"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:151469461500:android:f5522224a6c8fcf9",
+        "android_client_info": {
+          "package_name": "barak.com.parkingapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "151469461500-mqpjvqog6i0437qp1nvklslkrkmarkt2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "barak.com.parkingapp",
+            "certificate_hash": "439d8ef613ac95d9cae8dce389d9d8d2e00ba9ff"
+          }
+        },
+        {
+          "client_id": "151469461500-d4uav510arltsq6cmn1t9mm5nlign324.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "151469461500-d4uav510arltsq6cmn1t9mm5nlign324.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuGc2tAcFX3SYOVIoJlNYvVxoivp7xWi4"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "151469461500-d4uav510arltsq6cmn1t9mm5nlign324.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

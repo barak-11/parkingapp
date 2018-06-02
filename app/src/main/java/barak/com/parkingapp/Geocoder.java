@@ -39,7 +39,7 @@ public class Geocoder extends AppCompatActivity {
     public ListView listView;
 
     public boolean remove[];
-
+    private static  History parent;
 
     Handler handler;
     @Override
@@ -90,7 +90,7 @@ public class Geocoder extends AppCompatActivity {
             Runnable r = new Runnable() {
                 @Override
                 public void run() {
-                    String test = "";
+                    String addressString = "";
                     for (int i = 0; i < listSize; i++) {
 
                         for (int j=0; j<remove.length; j++)
@@ -98,17 +98,17 @@ public class Geocoder extends AppCompatActivity {
 
                                 continue;
                             }
-                        String res = myDBfile.getString("test[" + i + "]", "Defualt");
+                        String res = myDBfile.getString("addressString[" + i + "]", "Defualt");
                         if (res.equals("Default")) {
-                            test="No entries yet";
-                            mylist.add(test);
+                            addressString="No entries yet";
+                            mylist.add(addressString);
                             break;
                         }
                         Log.d("HistoryStrings",res);
                         latlng=createLatLng(res);
 
-                        test = getAddress(latlng.latitude, latlng.longitude,1);
-                        mylist.add(test);
+                        addressString = getAddress(latlng.latitude, latlng.longitude,1);
+                        mylist.add(addressString);
                     }
                     handler.sendEmptyMessage(0);
                 }
@@ -276,76 +276,89 @@ public class Geocoder extends AppCompatActivity {
     }
 
     public Latlng createLatLng(String s) {
+        System.out.println("latlng:"+s);
         Latlng latlng = new Latlng();
-        char[] charArray = s.toCharArray();
-        char[] charOutputLat = new char[s.length()];
-        char[] charOutputLon = new char[s.length()];
-        boolean latitude = true;
-        boolean longitude = false;
-        int i = 0;
-        int g = 0;
-        int h = 0;
-        String d;
-        boolean flag = false;
-        char pointer = charArray[i];
+        //try {
 
 
-        while (s.length() != i) {
-            if (pointer >= '0' && pointer <= '9') {
-                flag = true;
+            char[] charArray = s.toCharArray();
+            char[] charOutputLat = new char[s.length()];
+            char[] charOutputLon = new char[s.length()];
+            boolean latitude = true;
+            boolean longitude = false;
+            int i = 0;
+            int g = 0;
+            int h = 0;
+            String d;
+            boolean flag = false;
+            char pointer = charArray[i];
+
+
+            while (s.length() != i) {
+                if (pointer >= '0' && pointer <= '9') {
+                    flag = true;
+
+                }
+                if (flag == false) {
+                    i++;
+                    pointer = charArray[i];
+                    continue;
+                } else {
+
+
+                    if (pointer == ',') {
+                        i++;
+                        pointer = charArray[i];
+                        charOutputLat[g] = '\0';
+                        longitude = true;
+                        latitude = false;
+
+
+                    }
+                    if (pointer == ')') {
+                        break;
+
+                    }
+                    if (longitude) {
+
+                        if (pointer != ',')
+                            charOutputLon[h] = pointer;
+                        h++;
+                        i++;
+                        if (s.length() == i) {
+                            break;
+                        }
+                        pointer = charArray[i];
+
+                    }
+
+                    if (latitude) {
+                        charOutputLat[g] = pointer;
+                        g++;
+                        i++;
+                        if (s.length() == i) {
+                            break;
+                        }
+                        pointer = charArray[i];
+                    }
+
+                }
 
             }
-            if (flag == false) {
-                i++;
-                pointer = charArray[i];
-                continue;
-            } else {
 
+            d = new String(charOutputLat);
+            latlng.latitude = Double.parseDouble(d);
+            d = new String(charOutputLon);
+            latlng.longitude = Double.parseDouble(d);
+            return latlng;
 
-                if (pointer == ',') {
-                    i++;
-                    pointer = charArray[i];
-                    charOutputLat[g] = '\0';
-                    longitude = true;
-                    latitude = false;
+        //} catch (Exception e) {
+        //    Log.e("Error loading list:",e.getMessage());
+        //}
+        //latlng.longitude = 0;
+        //latlng.latitude = 0;
+       // return latlng;
 
-
-                }
-                if (pointer == ')') {
-                    break;
-
-                }
-                if (longitude) {
-
-                    if (pointer != ',')
-                        charOutputLon[h] = pointer;
-                    h++;
-                    i++;
-                    if (s.length() == i) {
-                        break;
-                    }
-                    pointer = charArray[i];
-
-                }
-
-                if (latitude) {
-                    charOutputLat[g] = pointer;
-                    g++;
-                    i++;
-                    if (s.length() == i) {
-                        break;
-                    }
-                    pointer = charArray[i];
-                }
-
-            }
-
-        }
-
-        d = new String(charOutputLat);
-        latlng.latitude = Double.parseDouble(d);
-        d = new String(charOutputLon);
-        latlng.longitude = Double.parseDouble(d);
-        return latlng;
     }
+
 }

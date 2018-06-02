@@ -14,6 +14,8 @@ import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -23,6 +25,8 @@ import android.view.animation.BounceInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -31,11 +35,24 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Locale;
+import java.util.UUID;
+
+import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
 
 public class SaveLocationActivity extends AppCompatActivity implements LocationListener, OnMapReadyCallback {
@@ -70,6 +87,14 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
     TextView myTextViewLatiNotationN;
     TextView myTextViewAltiNotationE;
 
+    private List<Place> list_places = new ArrayList<>();
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private Place selectedPlace;
+    private FusedLocationProviderClient mFusedLocationClient;
+    private LocationRequest mLocationRequest;
+    private String address="";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -79,7 +104,19 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
-
+        //Firebase
+        try {
+            initFirebase();
+            addEventFirebaseListener();
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
+        try {
+            runLocationSettings();
+            getLastLocation();
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+        }
 
 
 
@@ -153,13 +190,75 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
     }
 
-    void somefunction () throws IOException {
+    private void addEventFirebaseListener() {
+        //Progressing
+        //circular_progress.setVisibility(View.VISIBLE);
 
-                SaveLocationActivity sa = new SaveLocationActivity();
-                sa.save(null);
+        mDatabaseReference.child("place").addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
+                try {
+                    if (list_places.size() > 0)
+                        list_places.clear();
+
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+                        String date_str = postSnapshot.child("createdDate").getValue().toString();
+
+                        Place place = new Place(postSnapshot.child("address").getValue().toString(), postSnapshot.child("createdDate").getValue().toString(), postSnapshot.child("uid").getValue().toString());
+                        list_places.add(place);
+                        //currentSpendings+=Integer.valueOf(postSnapshot.child("price").getValue().toString());
+                    }
+                    //final TextView budget_tv = (TextView) findViewById(R.id.budget);
+                    // remainedBudget = budget - currentSpendings;
+                    //currentSpendings=0;
+                    //budget_tv.setText(remainedBudget.toString());
+
+                    //rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
+                    PlaceAdapter pAdapter = new PlaceAdapter(list_places);
+                    // Attach the adapter to the recyclerview to populate items
+
+                    pAdapter.SetOnItemClickListener(new PlaceAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View v, int position, String id) {
+                            System.out.println("onItemClick MainActivity" + id);
+
+                            Place place = list_places.get(position);
+                            selectedPlace =place;
+                            //product=place.getName();
+                            //input_price.setText(String.valueOf(place.getPrice()));
+                            //mDropdownMenu.setCurrentTitle(place.getName());
+                        }
+                    });
+                    LinearLayoutManager llm = new LinearLayoutManager(SaveLocationActivity.this);
+                    llm.setOrientation(LinearLayoutManager.VERTICAL);
+                    // Set layout manager to position the items
+
+                    //circular_progress.setVisibility(View.INVISIBLE);
+
+
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "onDataChange() error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("Budget", "onDataChange() error", e);
+
+                }
+            }
+
+
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
+    private void initFirebase() {
+        FirebaseApp.initializeApp(this);
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference  = mFirebaseDatabase.getReference();
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -276,6 +375,10 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
             myEditor.commit(); //"commit" saves the file
 
 
+            Place place = new Place(address, Calendar.getInstance().getTime().toString(), UUID.randomUUID().toString());
+            mDatabaseReference.child("place").child(place.getUid()).setValue(place);
+
+
 
             Intent myIntent;
             myIntent = new Intent(this, HomeActivity.class);
@@ -292,6 +395,10 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
     @Override
     public void onLocationChanged(Location location) {
         try{
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                return;
+            }
             _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
             _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
@@ -343,6 +450,10 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
     public void updateCurrentLocation(View view) {
         try{
             Toast.makeText(this, "Updating...", Toast.LENGTH_SHORT).show();
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+                return;
+            }
             _manager = (LocationManager) getSystemService(this.LOCATION_SERVICE);
             _manager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 0, this);
 
@@ -381,7 +492,10 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
         try{
             LatLng myLocation = new LatLng(latitude, longitude);
+            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 
+                return;
+            }
             map.setMyLocationEnabled(true);
             map.moveCamera(CameraUpdateFactory.newLatLngZoom(myLocation, 13));
             Marker marker = null;
@@ -446,6 +560,63 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
         }
         return ranBefore;
 
+    }
+    private void getLastLocation() throws IOException{
+
+        //final TextView latlngNew = (TextView)findViewById(R.id.latLng);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
+        mFusedLocationClient.getLastLocation()
+                .addOnSuccessListener(this, new OnSuccessListener<Location>() {
+                    @Override
+                    public void onSuccess(Location location) {
+                        // Got last known location. In some rare situations this can be null.
+                        if (location != null) {
+
+
+
+                            android.location.Geocoder geocoder;
+                            List<Address> addresses;
+                            double latitude = location.getLatitude();
+                            double longitude = location.getLongitude();
+                            geocoder = new android.location.Geocoder(SaveLocationActivity.this, Locale.getDefault());
+
+                            try {
+                                addresses = geocoder.getFromLocation(latitude, longitude, 1); // Here 1 represent max location result to returned, by documents it recommended 1 to 5
+                                address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
+                                String city = addresses.get(0).getLocality();
+                                String state = addresses.get(0).getAdminArea();
+                                String country = addresses.get(0).getCountryName();
+                                String postalCode = addresses.get(0).getPostalCode();
+                                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
+                                Log.d("debug",address+","+city+","+state+","+country+","+postalCode+","+knownName);
+                                //latlngNew.setText(address);
+                            }
+                            catch (Exception e){
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+
+
+                        }
+                        else {
+
+                            Toast.makeText(getApplicationContext(),"location is null", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                });
+    }
+    private  void runLocationSettings(){
+        //Asking permission to access device's location
+        ActivityCompat.requestPermissions(SaveLocationActivity.this,
+                new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION},
+                1);
+        mFusedLocationClient = getFusedLocationProviderClient(this);
+        if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            return;
+        }
     }
 
 }

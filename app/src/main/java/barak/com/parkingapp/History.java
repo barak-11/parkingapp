@@ -4,19 +4,33 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.google.firebase.FirebaseApp;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import android.support.v7.app.ActionBar;
 
-public class History extends Activity {
+public class History extends AppCompatActivity {
 
 
     public static ListView listView;
@@ -28,202 +42,103 @@ public class History extends Activity {
 
     public int listSize = 0;
     double test = 0;
+    private List<Place> list_places = new ArrayList<>();
 
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference mDatabaseReference;
+    private Place selectedPlace;
+    private ProgressBar circular_progress;
+    RecyclerView rvContacts;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_history);
 
-        myDBfile = getSharedPreferences("file2", MODE_PRIVATE);
-        myEditor = myDBfile.edit();
+        //Add toolbar
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar); // Attaching the layout to the toolbar object
+        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayHomeAsUpEnabled(true);
 
-        try{
-            String testing = myDBfile.getString("k", Integer.toString(-1));
-            listSize = Integer.parseInt(testing);
-            mylist = new ArrayList<String>();
-            if (listSize != -1) {
-                mylist.clear();
-                for (int i = 0; i < listSize; i++) {
-                    //if (i>listSize)break;
-                    String res = myDBfile.getString("test[" + i + "]", "Defualt");
-                    //test = returnLatitudeOld(res);
-                    //Log.d("returnLat",Double.toString(test));
-                    mylist.add(res);
-                }
-            }
 
-            listView = (ListView) findViewById(R.id.listViewNew);
-
-            if (mylist == null) {
-                mylist = new ArrayList<String>();
-            }
+        rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
+        circular_progress = (ProgressBar)findViewById(R.id.circular_progress);
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        rvContacts.setLayoutManager(llm);
+        PlaceAdapter pAdapter = new PlaceAdapter(list_places);
+        rvContacts.setAdapter( pAdapter );
+        //Firebase
+        try {
+            initFirebase();
+            addEventFirebaseListener();
         }catch (Exception e){
-            Toast.makeText(this, "getting Data error: "+e.getMessage(), Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
 
-        //editStringValues(mylist);
+    }
+    private void addEventFirebaseListener() {
+        //Progressing
+        circular_progress.setVisibility(View.VISIBLE);
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1, mylist);
-
-
-        // Assign adapter to ListView
-        listView.setAdapter(adapter);
-
-        // ListView Item Click Listener
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
+        mDatabaseReference.child("place").addValueEventListener(new ValueEventListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view,
-                                    int position, long id) {
+            public void onDataChange(DataSnapshot dataSnapshot) {
 
-                // ListView Clicked item index
-                int itemPosition = position;
-
-                // ListView Clicked item value
-                String itemValue = (String) listView.getItemAtPosition(position);
-
-                Latlng latlng = returnLatitude(itemValue);
-
-                Geocoder geocoder = new Geocoder();
-                geocoder.geocoder = new android.location.Geocoder(getApplicationContext(), Locale.US);
                 try {
-                    geocoder.addresses = geocoder.geocoder.getFromLocation(latlng.latitude, latlng.longitude, 1);
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    if (list_places.size() > 0)
+                        list_places.clear();
+
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                        Place place = new Place(postSnapshot.child("address").getValue().toString(), postSnapshot.child("createdDate").getValue().toString(), postSnapshot.child("uid").getValue().toString());
+                        list_places.add(place);
+                    }
+                    TextView tvTotal = (TextView) findViewById(R.id.textViewHistory);
+                    tvTotal.setText(String.valueOf(list_places.size()+" records in total"));
+
+                    rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
+                    PlaceAdapter pAdapter = new PlaceAdapter(list_places);
+
+                    pAdapter.SetOnItemClickListener(new PlaceAdapter.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(View v, int position, String id) {
+                            System.out.println("onItemClick MainActivity" + id);
+
+                            Place place = list_places.get(position);
+                            selectedPlace =place;
+                        }
+                    });
+                    LinearLayoutManager llm = new LinearLayoutManager(History.this);
+                    llm.setOrientation(LinearLayoutManager.VERTICAL);
+                    rvContacts.setLayoutManager(llm);
+                    rvContacts.setAdapter(pAdapter);
+                    // Set layout manager to position the items
+
+                    circular_progress.setVisibility(View.INVISIBLE);
+
+
+                } catch (Exception e) {
+                    Toast.makeText(getApplicationContext(), "onDataChange() error:" + e.getMessage(), Toast.LENGTH_LONG).show();
+                    Log.e("Budget", "onDataChange() error", e);
+
                 }
-
-                // Show Alert
-                Toast.makeText(getApplicationContext(),
-                        "Position :" + itemPosition + "  ListItem : " + itemValue, Toast.LENGTH_LONG)
-                        .show();
-
             }
 
+
+
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
         });
     }
 
-    public void reset(View view) {
-
-        mylist.clear();
-        myEditor.clear();
-        myEditor.commit();
-        Intent clearIntent;
-        clearIntent = new Intent(this, History.class);
-        startActivity(clearIntent);
-    }
-
-    class Latlng {
-        double longitude;
-        double latitude;
-    }
-
-    public Latlng returnLatitude(String s) {
-        Latlng latlng = new Latlng();
-        char[] charArray = s.toCharArray();
-        char[] charOutputLat = new char[s.length()];
-        char[] charOutputLon = new char[s.length()];
-        boolean latitude = true;
-        boolean longitude = false;
-
-        int i = 0;
-        int g = 0;
-        int h = 0;
-        String d = new String("");
-
-        boolean flag = false;
-        char pointer = charArray[i];
-
-
-        while (s.length() != i) {
-            if (pointer >= '0' && pointer <= '9') {
-                flag = true;
-
-            }
-            if (flag == false) {
-                i++;
-                pointer = charArray[i];
-                continue;
-            } else {
-
-
-                if (pointer == ',') {
-                    i++;
-                    pointer = charArray[i];
-                    charOutputLat[g] = '\0';
-                    longitude = true;
-                    latitude = false;
-
-
-                }
-                if (pointer == ')') {
-                    break;
-
-                }
-                if (longitude) {
-
-                    if (pointer != ',')
-                        charOutputLon[h] = pointer;
-                    h++;
-                    i++;
-                    if (s.length() == i) {
-                        break;
-                    }
-                    pointer = charArray[i];
-
-                }
-
-                if (latitude) {
-                    charOutputLat[g] = pointer;
-                    g++;
-                    i++;
-                    if (s.length() == i) {
-                        break;
-                    }
-                    pointer = charArray[i];
-                }
-
-            }
-
-        }
-        System.out.println("charArray : " + String.valueOf(charArray));
-        System.out.println("charOutputLat:" + String.valueOf(charOutputLat));
-        System.out.println("charOutputLon:" + String.valueOf(charOutputLon));
-
-        d = new String(charOutputLat);
-        latlng.latitude = Double.parseDouble(d);
-        d = new String(charOutputLon);
-        latlng.longitude = Double.parseDouble(d);
-        return latlng;
-    }
-
-
-    public double returnLatitudeOld(String s) {
-        char[] charArray = s.toCharArray();
-        char[] charOutput = new char[s.length()];
-        int i = 0;
-        int g = 0;
-        String d = "";
-        boolean flag = false;
-        char pointer = charArray[i];
-        Log.d("charOutput", String.valueOf(charArray));
-
-        while (pointer != '\0') {
-            if (pointer == ',') {
-                charOutput[i] = '\0';
-                break;
-
-            }
-            Log.d("pointer", Character.toString(pointer));
-
-            charOutput[i] = pointer;
-            Log.d("valueOFChar", String.valueOf(charOutput));
-
-            i++;
-            pointer = charArray[i];
-        }
-        double res = 0;
-        return res;
+    private void initFirebase() {
+        FirebaseApp.initializeApp(this);
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mDatabaseReference  = mFirebaseDatabase.getReference();
     }
 }
 
