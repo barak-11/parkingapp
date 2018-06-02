@@ -17,6 +17,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
     private List<Place> mPlaces;
     public Context context;
     OnItemClickListener mItemClickListener;
+    OnItemClickListener mItemLongClickListener;
     //private DropdownMenu mDropdownMenu;
     // Pass in the contact array into the constructor
     public PlaceAdapter(List<Place> places) {
@@ -26,7 +27,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
     // Provide a direct reference to each of the views within a data item
     // Used to cache the views within the item layout for fast access
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener,View.OnLongClickListener{
         // Your holder should contain a member variable
         // for any view that will be set as you render a row
         TextView addressTV;
@@ -42,6 +43,7 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
             addressTV = (TextView) itemView.findViewById(R.id.purchase_name);
             createdDateTV = (TextView) itemView.findViewById(R.id.purchase_price);
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -50,13 +52,23 @@ public class PlaceAdapter extends RecyclerView.Adapter<PlaceAdapter.ViewHolder> 
 
             mItemClickListener.onItemClick(v, getAdapterPosition(), "id"); //OnItemClickListener mItemClickListener;
         }
+
+        @Override
+        public boolean onLongClick(View v) {
+            mItemLongClickListener.onLongItemClick(v, getAdapterPosition(), "id");
+            return true;
+        }
     }
     public interface OnItemClickListener {
         public void onItemClick(View view, int position, String id);
+        public void onLongItemClick(View view, int position, String id);
     }
 
     public void SetOnItemClickListener(final OnItemClickListener mItemClickListener) {
         this.mItemClickListener = mItemClickListener;
+    }
+    public void SetOnLongItemClickListener(final OnItemClickListener mItemLongClickListener) {
+        this.mItemLongClickListener = mItemLongClickListener;
     }
     @Override
     public PlaceAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)  {

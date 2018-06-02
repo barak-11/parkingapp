@@ -205,7 +205,7 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
                         String date_str = postSnapshot.child("createdDate").getValue().toString();
 
-                        Place place = new Place(postSnapshot.child("address").getValue().toString(), postSnapshot.child("createdDate").getValue().toString(), postSnapshot.child("uid").getValue().toString());
+                        Place place = new Place(postSnapshot.child("address").getValue().toString(), postSnapshot.child("createdDate").getValue().toString(), postSnapshot.child("uid").getValue().toString(),postSnapshot.child("longitude").getValue().toString(),postSnapshot.child("latitude").getValue().toString());
                         list_places.add(place);
                         //currentSpendings+=Integer.valueOf(postSnapshot.child("price").getValue().toString());
                     }
@@ -221,13 +221,16 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
                     pAdapter.SetOnItemClickListener(new PlaceAdapter.OnItemClickListener() {
                         @Override
                         public void onItemClick(View v, int position, String id) {
-                            System.out.println("onItemClick MainActivity" + id);
+                            //System.out.println("onItemClick MainActivity" + id);
 
-                            Place place = list_places.get(position);
-                            selectedPlace =place;
-                            //product=place.getName();
-                            //input_price.setText(String.valueOf(place.getPrice()));
-                            //mDropdownMenu.setCurrentTitle(place.getName());
+                            //Place place = list_places.get(position);
+                            //selectedPlace =place;
+
+                        }
+
+                        @Override
+                        public void onLongItemClick(View view, int position, String id) {
+
                         }
                     });
                     LinearLayoutManager llm = new LinearLayoutManager(SaveLocationActivity.this);
@@ -341,6 +344,8 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
             exists=false;
             saved = true;
+            String longtitudeFirebase=((TextView) findViewById(R.id.longtitude)).getText().toString();
+            String latitudeFirebase=((TextView) findViewById(R.id.latitude)).getText().toString();
             myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
             myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
             myEditor.putString("saved", Boolean.toString(saved));
@@ -375,7 +380,7 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
             myEditor.commit(); //"commit" saves the file
 
 
-            Place place = new Place(address, Calendar.getInstance().getTime().toString(), UUID.randomUUID().toString());
+            Place place = new Place(address, Calendar.getInstance().getTime().toString(), UUID.randomUUID().toString(),longtitudeFirebase,latitudeFirebase);
             mDatabaseReference.child("place").child(place.getUid()).setValue(place);
 
 

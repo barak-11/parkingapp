@@ -8,10 +8,31 @@ public class Place{
     String address;
     String createdDate;
     String uid;
-    public Place(String address, String createdDate, String uid){
+    String longitude;
+    String latitude;
+
+    public Place(String address, String createdDate, String uid, String longitude,String latitude){
         this.address=address;
         this.createdDate=createdDate;
         this.uid=uid;
+        this.longitude=longitude;
+        this.latitude=latitude;
+    }
+
+    public String getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(String longitude) {
+        this.longitude = longitude;
+    }
+
+    public String getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(String latitude) {
+        this.latitude = latitude;
     }
 
     public String getUid() {

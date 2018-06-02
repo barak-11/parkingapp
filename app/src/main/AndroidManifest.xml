@@ -72,7 +72,8 @@
         </activity>
         <activity
             android:name=".History"
-            android:label="@string/title_activity_history" >
+            android:label="@string/title_activity_history"
+            android:parentActivityName=".HomeActivity">
         </activity>
         <activity
             android:name=".Geocoder"
