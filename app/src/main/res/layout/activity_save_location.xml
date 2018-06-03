@@ -102,29 +102,29 @@
         android:layout_marginTop="5dp" />
 
     <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="366dp"
+        android:layout_width="match_parent"
         android:layout_height="43dp"
-        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
         android:weightSum="1">
 
         <Button
-            android:layout_width="47dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/checked21"
             android:id="@+id/YesButton"
-            android:onClick="save"
-            android:layout_marginLeft="85dp"
-            android:layout_gravity="center" />
+            android:layout_width="41dp"
+            android:layout_height="40dp"
+            android:layout_marginLeft="110dp"
+            android:background="@drawable/checked21"
+            android:onClick="save" />
 
         <Button
-            android:layout_width="43dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/delete856"
             android:id="@+id/ReturnButton"
-            android:onClick="returnToMainActivity"
-            android:layout_marginLeft="60dp"
-            android:layout_weight="0.03" />
+            android:layout_width="41dp"
+            android:layout_height="35dp"
+            android:layout_marginLeft="50dp"
+            android:background="@drawable/delete856"
+            android:onClick="returnToMainActivity" />
+
+
+
     </LinearLayout>
 
 </LinearLayout>

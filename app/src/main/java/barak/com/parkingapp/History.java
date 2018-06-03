@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -80,6 +81,7 @@ public class History extends AppCompatActivity {
         }catch (Exception e){
             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
         }
+        registerForContextMenu(rvContacts);
 
     }
     private void addEventFirebaseListener() {
@@ -116,7 +118,7 @@ public class History extends AppCompatActivity {
 
                         @Override
                         public void onLongItemClick(View v, int position, String id) {
-
+                            registerForContextMenu(rvContacts);
                         }
                     });
                     pAdapter.SetOnLongItemClickListener(new PlaceAdapter.OnItemClickListener() {
@@ -131,6 +133,14 @@ public class History extends AppCompatActivity {
 
                               Place place = list_places.get(position);
                              selectedPlace =place;
+                             /*
+                            myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
+                            myEditor = myDBfile.edit();
+                            myEditor.putString("latitude", place.getLatitude() );
+                            myEditor.putString("longitude", place.getLongitude() );
+                            myEditor.apply(); //"commit" saves the file
+                            */
+
                         }
                     });
 
@@ -166,6 +176,36 @@ public class History extends AppCompatActivity {
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mDatabaseReference  = mFirebaseDatabase.getReference();
     }
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        int position = -1;
+        try {
+            position = ((PlaceAdapter) rvContacts.getAdapter()).getPosition();
+        } catch (Exception e) {
+            return super.onContextItemSelected(item);
+        }
+        if(item.getTitle()=="Set Location"){
+            //Toast.makeText(getApplicationContext(),"calling code",Toast.LENGTH_LONG).show();
+            myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
+            myEditor = myDBfile.edit();
+            myEditor.putString("longitude", list_places.get(position).getLongitude());
+            myEditor.putString("latitude", list_places.get(position).getLatitude());
+
+            myEditor.apply(); //"commit" saves the file
+            Intent myIntent;
+            myIntent = new Intent(this, HomeActivity.class);
+            myIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(myIntent);
+            finish();
+        }
+        else if(item.getTitle()==""){
+            Toast.makeText(getApplicationContext(),"sending sms code",Toast.LENGTH_LONG).show();
+        }else{
+            return false;
+        }
+        return super.onContextItemSelected(item);
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.

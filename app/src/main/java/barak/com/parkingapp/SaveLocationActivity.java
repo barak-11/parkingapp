@@ -61,8 +61,6 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
     final static int MAX_HISTORY_SIZE = 30;
     SharedPreferences myDBfile; // create a file or return a reference to an exist file
     SharedPreferences.Editor myEditor;
-    SharedPreferences myDBfileNew; // create a file or return a reference to an exist file
-    SharedPreferences.Editor myEditorNew;
 
     LocationManager _manager;
 
@@ -128,8 +126,7 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
         myDBfile = getSharedPreferences("file1", MODE_PRIVATE);
         myEditor = myDBfile.edit();
-        myDBfileNew = getSharedPreferences("file2", MODE_PRIVATE);
-        myEditorNew = myDBfileNew.edit();
+
 
         index = myDBfile.getInt("Index", 0);
 
@@ -203,20 +200,12 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
                         list_places.clear();
 
                     for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
-                        String date_str = postSnapshot.child("createdDate").getValue().toString();
 
                         Place place = new Place(postSnapshot.child("address").getValue().toString(), postSnapshot.child("createdDate").getValue().toString(), postSnapshot.child("uid").getValue().toString(),postSnapshot.child("longitude").getValue().toString(),postSnapshot.child("latitude").getValue().toString());
                         list_places.add(place);
-                        //currentSpendings+=Integer.valueOf(postSnapshot.child("price").getValue().toString());
                     }
-                    //final TextView budget_tv = (TextView) findViewById(R.id.budget);
-                    // remainedBudget = budget - currentSpendings;
-                    //currentSpendings=0;
-                    //budget_tv.setText(remainedBudget.toString());
 
-                    //rvContacts = (RecyclerView) findViewById(R.id.rvContacts);
                     PlaceAdapter pAdapter = new PlaceAdapter(list_places);
-                    // Attach the adapter to the recyclerview to populate items
 
                     pAdapter.SetOnItemClickListener(new PlaceAdapter.OnItemClickListener() {
                         @Override
@@ -235,14 +224,11 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
                     });
                     LinearLayoutManager llm = new LinearLayoutManager(SaveLocationActivity.this);
                     llm.setOrientation(LinearLayoutManager.VERTICAL);
-                    // Set layout manager to position the items
-
-                    //circular_progress.setVisibility(View.INVISIBLE);
 
 
                 } catch (Exception e) {
                     Toast.makeText(getApplicationContext(), "onDataChange() error:" + e.getMessage(), Toast.LENGTH_LONG).show();
-                    Log.e("Budget", "onDataChange() error", e);
+                    Log.e("ParkingApp", "onDataChange() error", e);
 
                 }
             }
@@ -339,44 +325,13 @@ public class SaveLocationActivity extends AppCompatActivity implements LocationL
 
     public void save(View view) throws IOException {
         try{
-            History history = new History();
-            Geocoder geocoder = new Geocoder();
 
-            exists=false;
-            saved = true;
             String longtitudeFirebase=((TextView) findViewById(R.id.longtitude)).getText().toString();
             String latitudeFirebase=((TextView) findViewById(R.id.latitude)).getText().toString();
             myEditor.putString("longitude", ((TextView) findViewById(R.id.longtitude)).getText().toString());
             myEditor.putString("latitude", ((TextView) findViewById(R.id.latitude)).getText().toString());
-            myEditor.putString("saved", Boolean.toString(saved));
-
-            if (isFirstTime()) {
-                myEditorNew.putString("k","0");
-            }
-            LatLng myLocation = new LatLng(latitude, longitude);
-            if (history.mylist==null) {
-                history.mylist = new ArrayList<String>();
-            }
-            history.mylist.add(myLocation.toString());
 
 
-            if (geocoder.addresses==null) {
-                geocoder.addresses = new ArrayList<Address>();
-            }
-
-            String test=myDBfileNew.getString("k","0");
-            Log.d("k1", test);
-            k=Integer.parseInt(test);
-            if (k>200)
-            {
-                k=0;
-            }
-            myEditorNew.putString("test["+k+"]",myLocation.toString());
-            k++;
-
-            myEditorNew.putString("k",Integer.toString(k));
-
-            myEditorNew.commit();
             myEditor.commit(); //"commit" saves the file
 
 
